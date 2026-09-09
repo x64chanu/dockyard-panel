@@ -589,6 +589,12 @@
       <div class="avatar-preview" id="avatarPreview">–</div>
     </div>
 
+    <div class="field">
+      <label>Mod icon URL (optional)</label>
+      <input type="url" id="fModIcon" placeholder="Direct image URL shown as the mod's icon">
+      <div id="modIconHint" class="hint" style="margin-top:6px;margin-bottom:0;">Leave empty to use the category icon — or a texture pack's own embedded preview once someone installs it.</div>
+    </div>
+
     <div class="save-row">
       <button class="secondary" id="saveModalBtn">Add to catalog</button>
     </div>
@@ -1153,7 +1159,19 @@
     }
 
     updateAvatarPreview();
+    $("fModIcon").value = firstImageInBody(rel.body, state.repo.description);
     $("addModal").classList.remove("hidden");
+  }
+
+  function firstImageInBody(body, description) {
+    var text = ((body || "") + " " + (description || ""));
+    var re = /!\[[^\]]*\]\(([^)\s]+)\)|https?:\/\/[^\s"'<>]+\.(?:png|jpe?g|webp|gif)(?:\?[^\s"'<>]*)?/ig;
+    var m;
+    while ((m = re.exec(text)) !== null) {
+      var u = (m[1] ? m[1].replace(/\)$/, "") : m[0].replace(/[)'"<>]$/g, "")).trim();
+      if (/^https?:\/\//.test(u)) return u;
+    }
+    return "";
   }
 
   $("fAuthorName").addEventListener("input", updateAvatarPreview);
@@ -1183,12 +1201,14 @@
     }
 
     var avatarUrl = $("fAuthorAvatar").value.trim() || undefined;
+    var modIconUrl = $("fModIcon").value.trim() || undefined;
 
     var asset = rel.assets[0];
     var entry = {
       id: modId,
       name: modName,
       description: $("fDescription").value.trim(),
+      iconUrl: modIconUrl,
       author: {
         id: state.repo.arcdevs ? slugify(authorName) : state.repo.owner,
         name: authorName,
@@ -1219,6 +1239,7 @@
       downloadCount: 0
     };
     if (!avatarUrl) delete entry.author.avatarUrl;
+    if (!modIconUrl) delete entry.iconUrl;
 
     var existingIdx = catalog.mods.findIndex(function (m) { return m.id === modId; });
     if (existingIdx >= 0) {
