@@ -1,0 +1,10 @@
+{
+  "featuredMods": ["parteditor"],
+  "featuredModders": ["cucumber-sp"],
+  "app": {
+    "latestVersion": "1.0.0",
+    "minimumVersion": "1.0.0",
+    "androidDownloadUrl": "https://apps.heychano.xyz/dockyard/builds/dockyard.apk",
+    "changelog": ""
+  }
+}

@@ -1,0 +1,5 @@
+# Prevent direct web access to the admin token file.
+# (Apache-only. On Nginx, add the equivalent location block in the config.)
+<Files "secret.php">
+  Require all denied
+</Files>

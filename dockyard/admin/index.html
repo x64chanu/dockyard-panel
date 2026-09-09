@@ -1,0 +1,1220 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dockyard Admin</title>
+<style>
+  :root {
+    --bg: #0D0D0D;
+    --surface: #151417;
+    --surface-light: #1C1A1D;
+    --border: #28252A;
+    --border-light: #332F35;
+    --text: #E9E2FF;
+    --text-secondary: #9A95A1;
+    --text-muted: #66626B;
+    --primary: #FF0029;
+    --primary-dark: #CC0021;
+    --success: #3DDC84;
+    --warning: #F5A623;
+    --danger: #FF4D5E;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    line-height: 1.5;
+    min-height: 100vh;
+  }
+
+  header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 28px;
+    border-bottom: 1px solid var(--border);
+    background: var(--surface);
+  }
+
+  header h1 {
+    font-size: 18px;
+    font-weight: 800;
+    letter-spacing: -0.2px;
+  }
+
+  header h1 span { color: var(--primary); }
+
+  header .sub {
+    color: var(--text-secondary);
+    font-size: 12px;
+    font-weight: 700;
+    margin-top: 2px;
+  }
+
+  .status {
+    font-size: 12px;
+    font-weight: 700;
+    padding: 6px 12px;
+    border-radius: 999px;
+    border: 1px solid var(--border);
+    color: var(--text-secondary);
+  }
+
+  .status.online { color: var(--success); border-color: rgba(61,220,132,.4); }
+  .status.offline { color: var(--danger); border-color: rgba(255,77,94,.4); }
+
+  main {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 24px;
+  }
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 22px;
+    margin-bottom: 20px;
+  }
+
+  .card h2 {
+    font-size: 14px;
+    font-weight: 800;
+    letter-spacing: .5px;
+    text-transform: uppercase;
+    color: var(--text);
+    margin-bottom: 4px;
+  }
+
+  .card .hint {
+    color: var(--text-muted);
+    font-size: 12px;
+    margin-bottom: 16px;
+  }
+
+  .field { margin-bottom: 14px; }
+  .field label {
+    display: block;
+    color: var(--text-secondary);
+    font-size: 12px;
+    font-weight: 700;
+    margin-bottom: 6px;
+  }
+
+  input[type=text], input[type=url], input[type=password], textarea, select {
+    width: 100%;
+    background: var(--surface-light);
+    border: 1px solid var(--border);
+    color: var(--text);
+    border-radius: 10px;
+    padding: 10px 12px;
+    font-size: 14px;
+    font-family: inherit;
+  }
+
+  input:focus, textarea:focus, select:focus {
+    outline: none;
+    border-color: var(--primary);
+  }
+
+  textarea { resize: vertical; min-height: 72px; }
+
+  .row { display: flex; gap: 12px; }
+  .row .field { flex: 1; }
+
+  button {
+    cursor: pointer;
+    border: none;
+    border-radius: 10px;
+    padding: 10px 18px;
+    font-size: 14px;
+    font-weight: 800;
+    font-family: inherit;
+    background: var(--primary);
+    color: #fff;
+    transition: opacity .15s;
+  }
+
+  button:hover { opacity: .85; }
+  button:disabled { opacity: .45; cursor: not-allowed; }
+
+  button.secondary {
+    background: var(--surface-light);
+    color: var(--text);
+    border: 1px solid var(--border);
+  }
+
+  button.ghost {
+    background: transparent;
+    color: var(--text-secondary);
+    border: 1px solid var(--border);
+  }
+
+  button.danger {
+    background: transparent;
+    color: var(--danger);
+    border: 1px solid rgba(255,77,94,.4);
+  }
+
+  .login { display: flex; gap: 10px; }
+
+  .picker-row { display: flex; gap: 10px; align-items: flex-end; }
+
+  .picker-row .field { flex: 1; margin-bottom: 0; }
+
+  .ordered-list { margin-top: 14px; }
+
+  .ordered-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: var(--surface-light);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 8px 12px;
+    margin-bottom: 8px;
+  }
+
+  .ordered-item .avatar {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background: var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: 800;
+    color: var(--text-secondary);
+    flex-shrink: 0;
+    overflow: hidden;
+  }
+
+  .ordered-item .avatar img { width: 100%; height: 100%; object-fit: cover; }
+
+  .ordered-item .meta { flex: 1; min-width: 0; }
+  .ordered-item .meta .name { font-size: 13px; font-weight: 700; }
+  .ordered-item .meta .id { color: var(--text-muted); font-size: 11px; }
+
+  .ordered-item .tools { display: flex; gap: 4px; }
+
+  .ordered-item .tools button {
+    width: 30px;
+    height: 30px;
+    padding: 0;
+    border-radius: 8px;
+    font-size: 13px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--text-secondary);
+  }
+
+  .empty-list {
+    color: var(--text-muted);
+    font-size: 12px;
+    text-align: center;
+    padding: 16px;
+    border: 1px dashed var(--border);
+    border-radius: 10px;
+  }
+
+  .save-row {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    justify-content: flex-end;
+  }
+
+  /* ---- GitHub "Add a mod" ---- */
+
+  .pick-repo { display: flex; gap: 8px; flex-wrap: wrap; }
+  .pick-repo select { flex: 1 1 100%; }
+  .pick-repo .in { display: flex; gap: 8px; flex: 2 1 auto; }
+  .pick-repo .in .field { margin-bottom: 0; flex: 1; }
+  .pick-repo button { flex: 0 0 auto; margin-top: 0; }
+
+  .release-list { margin-top: 14px; }
+
+  .release-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: var(--surface-light);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 12px 14px;
+    margin-bottom: 8px;
+    cursor: pointer;
+    transition: border-color .12s, background .12s;
+  }
+
+  .release-item:hover { border-color: var(--border-light); }
+
+  .release-item.selected {
+    border-color: var(--primary);
+    background: rgba(255,0,41,.06);
+  }
+
+  .release-item .tag { flex-shrink: 0; }
+  .release-item input[type=radio] { accent-color: var(--primary); }
+
+  .release-item .meta { flex: 1; min-width: 0; }
+  .release-item .meta .name { font-size: 13px; font-weight: 700; }
+  .release-item .meta .date { color: var(--text-muted); font-size: 11px; margin-top: 2px; }
+  .release-item .meta .assets { color: var(--text-secondary); font-size: 11px; margin-top: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+  .badge {
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: .5px;
+    text-transform: uppercase;
+    padding: 3px 8px;
+    border-radius: 999px;
+    background: var(--surface-light);
+    border: 1px solid var(--border);
+    color: var(--text-secondary);
+    flex-shrink: 0;
+  }
+
+  .badge.arcdevs { border-color: rgba(255,0,41,.5); color: var(--primary); }
+
+  .row-hint { margin-top: 8px; }
+
+  /* ---- Modal ---- */
+
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,.65);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 50;
+    padding: 20px;
+  }
+
+  .modal {
+    width: 100%;
+    max-width: 560px;
+    max-height: 92vh;
+    overflow: auto;
+    background: var(--surface);
+    border: 1px solid var(--border-light);
+    border-radius: 18px;
+    padding: 22px;
+  }
+
+  .modal-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 6px;
+  }
+
+  .modal-head h2 {
+    font-size: 15px;
+    font-weight: 800;
+    letter-spacing: .4px;
+    text-transform: uppercase;
+  }
+
+  .modal-head button { padding: 6px 10px; font-size: 13px; }
+
+  .summary {
+    background: var(--surface-light);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 12px 14px;
+    margin-bottom: 16px;
+  }
+
+  .summary .repo { font-size: 12px; color: var(--text-secondary); font-weight: 700; }
+  .summary .rel { font-size: 13px; font-weight: 800; margin-top: 2px; }
+  .summary .asst { color: var(--text-muted); font-size: 11px; margin-top: 4px; }
+
+  .check-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+
+  .check-grid label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--surface-light);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 9px 11px;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--text);
+    cursor: pointer;
+  }
+
+  .check-grid input[type=checkbox] { accent-color: var(--primary); }
+
+  .avatar-pick { display: flex; align-items: flex-end; gap: 12px; }
+  .avatar-pick .field { flex: 1; margin-bottom: 0; }
+
+  .avatar-preview {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: var(--border);
+    border: 1px solid var(--border-light);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    color: var(--text-secondary);
+    overflow: hidden;
+    flex-shrink: 0;
+  }
+
+  .avatar-preview img { width: 100%; height: 100%; object-fit: cover; }
+
+  .modal .save-row { margin-top: 18px; }
+
+  .toast {
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translate(-50%, 80px);
+    background: var(--success);
+    color: #0D0D0D;
+    font-size: 14px;
+    font-weight: 800;
+    padding: 12px 20px;
+    border-radius: 12px;
+    opacity: 0;
+    transition: all .25s;
+    pointer-events: none;
+    z-index: 60;
+  }
+
+  .toast.show { transform: translate(-50%, 0); opacity: 1; }
+  .toast.error { background: var(--danger); color: #fff; }
+
+  .muted { color: var(--text-muted); font-size: 12px; }
+  .hidden { display: none !important; }
+</style>
+</head>
+<body>
+<header>
+  <div>
+    <h1>Dockyard <span>Admin</span></h1>
+    <div class="sub">Featured picks, app updates &amp; mod catalog</div>
+  </div>
+  <div id="connStatus" class="status">Disconnected</div>
+</header>
+
+<main>
+  <div class="card" id="loginCard">
+    <h2>Sign in</h2>
+    <div class="hint">Use the admin token from <code>api/secret.php</code>. Sent as a Bearer header.</div>
+    <div class="login">
+      <input type="password" id="tokenInput" placeholder="Admin token" autocomplete="off">
+      <button id="connectBtn">Connect</button>
+    </div>
+    <div id="loginError" class="hint" style="color:var(--danger);margin-top:10px;"></div>
+  </div>
+
+  <div id="workspace" class="hidden">
+    <div class="card">
+      <h2>App update</h2>
+      <div class="hint">Bump <b>latestVersion</b> above the installed app version to show users a new build is available.</div>
+      <div class="row">
+        <div class="field">
+          <label>Latest version</label>
+          <input type="text" id="fLatestVersion" placeholder="1.1.0">
+        </div>
+        <div class="field">
+          <label>Minimum version</label>
+          <input type="text" id="fMinimumVersion" placeholder="1.0.0">
+        </div>
+      </div>
+      <div class="field">
+        <label>APK download URL</label>
+        <input type="url" id="fAndroidUrl" placeholder="https://apps.heychano.xyz/dockyard/builds/dockyard.apk">
+      </div>
+      <div class="field">
+        <label>Changelog</label>
+        <textarea id="fChangelog" placeholder="What changed in this build?"></textarea>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Add a mod</h2>
+      <div class="hint">Pick a GitHub repository and one release (one release = one mod). The app downloads the release's <b>first asset</b> as-is — no archive extraction — so release the raw <code>.dll</code> (parts) or <code>.pack</code> (cosmetics).</div>
+
+      <div class="pick-repo">
+        <div class="in">
+          <div class="field">
+            <label>ArcDevs.io repo</label>
+            <select id="arcdevsRepos"><option value="">Loading…</option></select>
+          </div>
+          <div class="field">
+            <label>Owner</label>
+            <input type="text" id="fRepoOwner" placeholder="ArcDevsio">
+          </div>
+          <div class="field">
+            <label>Repo</label>
+            <input type="text" id="fRepoName" placeholder="PartEditor">
+          </div>
+        </div>
+        <button id="fetchReleasesBtn">Fetch releases</button>
+      </div>
+
+      <div class="release-list" id="releasesList"></div>
+    </div>
+
+    <div class="card">
+      <h2>Featured mods</h2>
+      <div class="hint">Top 5 ordered mods appear in the "Featured" section on Home.</div>
+      <div class="picker-row">
+        <div class="field">
+          <label>Add a mod</label>
+          <select id="modPicker"></select>
+        </div>
+        <button class="secondary" id="addModBtn">Add</button>
+      </div>
+      <div class="ordered-list" id="featuredModsList"></div>
+    </div>
+
+    <div class="card">
+      <h2>Featured modders</h2>
+      <div class="hint">Top 5 ordered modders appear in the horizontal "Featured Modders" row on Home.</div>
+      <div class="picker-row">
+        <div class="field">
+          <label>Add a modder</label>
+          <select id="modderPicker"></select>
+        </div>
+        <button class="secondary" id="addModderBtn">Add</button>
+      </div>
+      <div class="ordered-list" id="featuredModdersList"></div>
+    </div>
+
+    <div class="save-row">
+      <span id="saveStatus" class="muted"></span>
+      <button class="secondary" id="rawConfigToggle">Edit raw config.json</button>
+      <button class="secondary" id="rawCatalogToggle">Edit raw catalog.json</button>
+      <button id="saveBtn">Save changes</button>
+    </div>
+
+    <div class="card hidden" id="rawConfigCard">
+      <h2>Raw config.json</h2>
+      <div class="hint">Fine-grained control for featured picks and app updates.</div>
+      <textarea id="rawConfigTextarea" style="min-height:220px;font-family:monospace;font-size:12px;"></textarea>
+    </div>
+
+    <div class="card hidden" id="rawCatalogCard">
+      <h2>Raw catalog.json</h2>
+      <div class="hint">The full mod library. Must keep a top-level <code>mods</code> array.</div>
+      <textarea id="rawCatalogTextarea" style="min-height:220px;font-family:monospace;font-size:12px;"></textarea>
+    </div>
+  </div>
+</main>
+
+<div class="modal-overlay hidden" id="addModal">
+  <div class="modal">
+    <div class="modal-head">
+      <h2>Add mod to catalog</h2>
+      <button class="ghost" id="closeAddModal">✕</button>
+    </div>
+
+    <div class="summary" id="addSummary"></div>
+
+    <div class="field">
+      <label>Mod name</label>
+      <input type="text" id="fModName" placeholder="PartEditor">
+    </div>
+    <div class="field">
+      <label>Mod ID (URL-safe, unique)</label>
+      <input type="text" id="fModId" placeholder="parteditor">
+    </div>
+    <div class="field">
+      <label>Description</label>
+      <textarea id="fDescription" placeholder="What does this mod do?"></textarea>
+    </div>
+    <div class="field">
+      <label>Categories</label>
+      <div class="check-grid" id="fCategories"></div>
+    </div>
+
+    <div class="field">
+      <label id="fAuthorLabel">Author name</label>
+      <input type="text" id="fAuthorName" placeholder="github username or modder name">
+      <div id="authorHint" class="hint" style="margin-top:6px;margin-bottom:0;"></div>
+    </div>
+
+    <div class="avatar-pick">
+      <div class="field">
+        <label>Author avatar URL</label>
+        <input type="url" id="fAuthorAvatar" placeholder="https://github.com/owner.png">
+      </div>
+      <div class="avatar-preview" id="avatarPreview">–</div>
+    </div>
+
+    <div class="save-row">
+      <button class="secondary" id="saveModalBtn">Add to catalog</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+(function () {
+  "use strict";
+  var $ = function (id) { return document.getElementById(id); };
+  var API_URL = "../api/index.php";
+  var token = null;
+  var catalog = { mods: [] };
+  var state = {
+    featuredMods: [],
+    featuredModders: [],
+    app: { latestVersion: "", minimumVersion: "", androidDownloadUrl: "", changelog: "" },
+    repo: null,      // { owner, name, url, description, arcdevs }
+    releases: [],    // GitHub release objects
+    selectedRelease: null,
+    arcdevsOwners: ["arcdevsio", "arcdevs"]
+  };
+
+  var CATEGORIES = [
+    { v: "engines", l: "Engines" },
+    { v: "capsules", l: "Capsules" },
+    { v: "structural", l: "Structural" },
+    { v: "aerodynamics", l: "Aero" },
+    { v: "electronics", l: "Electronics" },
+    { v: "utility", l: "Utility" },
+    { v: "parts", l: "Parts" },
+    { v: "cosmetic", l: "Cosmetic → Texture Packs" }
+  ];
+
+  function toast(msg, isError, ms) {
+    var el = $("toast");
+    el.textContent = msg;
+    el.className = "toast" + (isError ? " error" : "");
+    requestAnimationFrame(function () { el.classList.add("show"); });
+    clearTimeout(el._t);
+    el._t = setTimeout(function () { el.classList.remove("show"); }, ms || 2600);
+  }
+
+  function setStatus(label, online) {
+    var el = $("connStatus");
+    el.textContent = label;
+    el.className = "status " + (online ? "online" : "offline");
+  }
+
+  function fmtSize(bytes) {
+    if (!bytes && bytes !== 0) return "";
+    if (bytes < 1024) return bytes + " B";
+    if (bytes < 1048576) return (bytes / 1024).toFixed(1) + " KB";
+    return (bytes / 1048576).toFixed(2) + " MB";
+  }
+
+  function humanize(s) {
+    if (!s) return "";
+    return s.replace(/[-_]/g, " ").replace(/\b\w/g, function (c) { return c.toUpperCase(); });
+  }
+
+  function slugify(s) {
+    if (!s) return "mod";
+    return s.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "") || "mod";
+  }
+
+  function isArcDevsOwner(owner) {
+    return state.arcdevsOwners.indexOf(String(owner).toLowerCase()) !== -1;
+  }
+
+  async function rawFetch(path, init) {
+    var headers = {};
+    if (token) headers["Authorization"] = "Bearer " + token;
+    if (init && init.body) headers["Content-Type"] = "application/json";
+    var res = await fetch(path, Object.assign({ headers: headers }, init));
+    var data = null;
+    try { data = await res.json(); } catch (e) {}
+    if (!res.ok) {
+      var err = (data && data.error) ? data.error : ("HTTP " + res.status);
+      throw new Error(err);
+    }
+    return data;
+  }
+
+  async function gh(url) {
+    var res = await fetch(url, { headers: { Accept: "application/vnd.github+json" } });
+    var data = null;
+    try { data = await res.json(); } catch (e) {}
+    if (!res.ok) {
+      throw new Error((data && (data.message || data.error)) || ("GitHub HTTP " + res.status));
+    }
+    return data;
+  }
+
+  $("connectBtn").addEventListener("click", async function () {
+    token = $("tokenInput").value.trim();
+    $("loginError").textContent = "";
+    $("connectBtn").disabled = true;
+    try {
+      var [catalogData, configData] = await Promise.all([
+        rawFetch("../catalog.json"),
+        rawFetch(API_URL + "?file=config.json")
+      ]);
+      catalog = Array.isArray(catalogData.mods) ? catalogData : { mods: [] };
+      state.featuredMods = Array.isArray(configData.featuredMods) ? configData.featuredMods : [];
+      state.featuredModders = Array.isArray(configData.featuredModders) ? configData.featuredModders : [];
+      state.app = Object.assign({ latestVersion: "", minimumVersion: "", androidDownloadUrl: "", changelog: "" }, configData.app || {});
+      render();
+      $("loginCard").classList.add("hidden");
+      $("workspace").classList.remove("hidden");
+      setStatus("Online", true);
+      toast("Connected");
+      loadArcDevsRepos();
+    } catch (e) {
+      token = null;
+      $("loginError").textContent = "Couldn't connect: " + e.message;
+      setStatus("Disconnected", false);
+    } finally {
+      $("connectBtn").disabled = false;
+    }
+  });
+
+  function render() {
+    $("fLatestVersion").value = state.app.latestVersion;
+    $("fMinimumVersion").value = state.app.minimumVersion;
+    $("fAndroidUrl").value = state.app.androidDownloadUrl;
+    $("fChangelog").value = state.app.changelog;
+
+    renderPicker("modPicker", catalog.mods.map(function (m) {
+      return { id: m.id, label: m.name + "  (by " + m.author.name + ")" };
+    }), state.featuredMods);
+    renderOrdered("featuredModsList", state.featuredMods, "mods");
+
+    var modders = modderList();
+    renderPicker("modderPicker", modders.map(function (m) {
+      return { id: m.id, label: m.name + "  (" + m.modCount + " mods)" };
+    }), state.featuredModders);
+    renderOrdered("featuredModdersList", state.featuredModders, "modders");
+
+    if (!$("rawConfigCard").classList.contains("hidden")) {
+      $("rawConfigTextarea").value = JSON.stringify(collectConfig(), null, 2);
+    }
+    if (!$("rawCatalogCard").classList.contains("hidden")) {
+      $("rawCatalogTextarea").value = JSON.stringify(catalog, null, 2);
+    }
+  }
+
+  function modderList() {
+    var byId = {};
+    catalog.mods.forEach(function (m) {
+      if (!m.author || !m.author.id) return;
+      if (!byId[m.author.id]) byId[m.author.id] = { id: m.author.id, name: m.author.name, avatarUrl: m.author.avatarUrl, modCount: 0 };
+      byId[m.author.id].modCount++;
+    });
+    return Object.keys(byId).map(function (k) { return byId[k]; });
+  }
+
+  function renderPicker(selectId, options, selected) {
+    var sel = $(selectId);
+    sel.innerHTML = '<option value="">Choose…</option>';
+    options.forEach(function (o) {
+      if (selected.indexOf(o.id) !== -1) return;
+      var opt = document.createElement("option");
+      opt.value = o.id;
+      opt.textContent = o.label;
+      sel.appendChild(opt);
+    });
+  }
+
+  function renderOrdered(nodeId, ids, type) {
+    var node = $(nodeId);
+    node.innerHTML = "";
+    if (!ids.length) {
+      var empty = document.createElement("div");
+      empty.className = "empty-list";
+      empty.textContent = "Nothing featured yet. Add from the dropdown above.";
+      node.appendChild(empty);
+      return;
+    }
+    ids.forEach(function (id, idx) {
+      var meta = (type === "mods")
+        ? catalog.mods.filter(function (m) { return m.id === id; })[0]
+        : modderList().filter(function (m) { return m.id === id; })[0];
+      if (!meta) return;
+      var el = document.createElement("div");
+      el.className = "ordered-item";
+
+      var av = document.createElement("div");
+      av.className = "avatar";
+      if (meta.avatarUrl) {
+        var img = document.createElement("img");
+        img.src = meta.avatarUrl;
+        img.setAttribute("referrerpolicy", "no-referrer");
+        av.appendChild(img);
+      } else {
+        av.textContent = (meta.name || meta.id || "?").slice(0, 2).toUpperCase();
+      }
+
+      var metaEl = document.createElement("div");
+      metaEl.className = "meta";
+      var name = document.createElement("div");
+      name.className = "name";
+      name.textContent = meta.name + (type === "modders" ? " — " + meta.modCount + " mods" : "");
+      var idEl = document.createElement("div");
+      idEl.className = "id";
+      idEl.textContent = id;
+      metaEl.appendChild(name); metaEl.appendChild(idEl);
+
+      var tools = document.createElement("div");
+      tools.className = "tools";
+      var up = mkTool("↑", idx > 0, function () { move(ids, idx, -1); reorderRender(); });
+      var down = mkTool("↓", idx < ids.length - 1, function () { move(ids, idx, 1); reorderRender(); });
+      var rm = mkTool("✕", true, function () { ids.splice(idx, 1); reorderRender(); }, true);
+      tools.appendChild(up); tools.appendChild(down); tools.appendChild(rm);
+
+      el.appendChild(av); el.appendChild(metaEl); el.appendChild(tools);
+      node.appendChild(el);
+    });
+  }
+
+  function mkTool(label, enabled, fn, danger) {
+    var b = document.createElement("button");
+    b.textContent = label;
+    b.disabled = !enabled;
+    if (danger) b.classList.add("danger");
+    b.addEventListener("click", fn);
+    return b;
+  }
+
+  function move(arr, idx, dir) {
+    var target = idx + dir;
+    if (target < 0 || target >= arr.length) return;
+    var tmp = arr[idx]; arr[idx] = arr[target]; arr[target] = tmp;
+  }
+
+  function reorderRender() { render(); }
+
+  $("addModBtn").addEventListener("click", function () {
+    var v = $("modPicker").value;
+    if (!v) return;
+    if (state.featuredMods.indexOf(v) === -1) state.featuredMods.push(v);
+    render();
+  });
+
+  $("addModderBtn").addEventListener("click", function () {
+    var v = $("modderPicker").value;
+    if (!v) return;
+    if (state.featuredModders.indexOf(v) === -1) state.featuredModders.push(v);
+    render();
+  });
+
+  /* ---- GitHub repo + release picker ---- */
+
+  async function loadArcDevsRepos() {
+    var sel = $("arcdevsRepos");
+    sel.innerHTML = '<option value="">Pick an ArcDevs.io repo…</option>';
+    try {
+      var repos = await gh("https://api.github.com/users/ArcDevsio/repos?per_page=100&sort=updated");
+      repos.forEach(function (r) {
+        var opt = document.createElement("option");
+        opt.value = r.full_name;
+        opt.textContent = r.full_name + "  (updated " + new Date(r.updated_at).toLocaleDateString() + ")";
+        sel.appendChild(opt);
+      });
+      if (!repos.length) {
+        var none = document.createElement("option");
+        none.textContent = "No repos found under ArcDevsio";
+        none.disabled = true;
+        sel.appendChild(none);
+      }
+    } catch (e) {
+      var errOpt = document.createElement("option");
+      errOpt.textContent = "Couldn't load (type any repo below instead)";
+      errOpt.disabled = true;
+      sel.appendChild(errOpt);
+    }
+  }
+
+  $("arcdevsRepos").addEventListener("change", function () {
+    var full = this.value;
+    if (!full) return;
+    var parts = full.split("/");
+    $("fRepoOwner").value = parts[0];
+    $("fRepoName").value = parts[1];
+    fetchReleases();
+  });
+
+  $("fetchReleasesBtn").addEventListener("click", fetchReleases);
+
+  async function fetchReleases() {
+    var owner = $("fRepoOwner").value.trim();
+    var name = $("fRepoName").value.trim();
+    if (!owner || !name) {
+      toast("Enter a repository owner and name.", true);
+      return;
+    }
+    var btn = $("fetchReleasesBtn");
+    btn.disabled = true;
+    btn.textContent = "Fetching…";
+    state.releases = [];
+    state.selectedRelease = null;
+    $("releasesList").innerHTML = "";
+    try {
+      var repo = await gh("https://api.github.com/repos/" + encodeURIComponent(owner) + "/" + encodeURIComponent(name));
+      var releases = await gh("https://api.github.com/repos/" + encodeURIComponent(owner) + "/" + encodeURIComponent(name) + "/releases?per_page=30");
+
+      state.repo = {
+        owner: repo.owner.login,
+        name: repo.name,
+        url: repo.html_url,
+        description: repo.description || "",
+        arcdevs: isArcDevsOwner(repo.owner.login)
+      };
+      state.releases = releases.filter(function (r) { return !r.draft; });
+
+      if (!state.releases.length) {
+        $("releasesList").innerHTML = '<div class="empty-list">No public releases yet — publish one on GitHub first.</div>';
+        toast("No releases found for " + owner + "/" + name, true);
+        return;
+      }
+      renderReleases();
+      toast(state.releases.length + " release(s) found.");
+    } catch (e) {
+      $("releasesList").innerHTML = '<div class="empty-list">Failed to load: ' + e.message + '</div>';
+      toast("GitHub error: " + e.message, true);
+    } finally {
+      btn.disabled = false;
+      btn.textContent = "Fetch releases";
+    }
+  }
+
+  function renderReleases() {
+    var node = $("releasesList");
+    node.innerHTML = "";
+    node.appendChild(retainCount());
+    state.releases.forEach(function (r) {
+      var el = document.createElement("div");
+      el.className = "release-item" + (state.selectedRelease === r ? " selected" : "");
+
+      var radio = document.createElement("input");
+      radio.type = "radio";
+      radio.name = "releasePick";
+      radio.checked = state.selectedRelease === r;
+
+      var tagBadge = document.createElement("span");
+      tagBadge.className = "tag badge";
+      tagBadge.textContent = r.tag_name;
+
+      var meta = document.createElement("div");
+      meta.className = "meta";
+      var nm = document.createElement("div");
+      nm.className = "name";
+      nm.textContent = r.name || humanize(state.repo.name);
+      var dt = document.createElement("div");
+      dt.className = "date";
+      dt.textContent = "Published " + (r.published_at ? new Date(r.published_at).toLocaleDateString() : "recently");
+      var asst = document.createElement("div");
+      asst.className = "assets";
+      asst.textContent = r.assets.length
+        ? "Asset: " + r.assets[0].name + " (" + fmtSize(r.assets[0].size) + ")" + (r.assets.length > 1 ? " +" + (r.assets.length - 1) + " more" : "")
+        : "No assets — add a file to this release";
+      meta.appendChild(nm); meta.appendChild(dt); meta.appendChild(asst);
+
+      el.appendChild(radio); el.appendChild(tagBadge); el.appendChild(meta);
+      el.addEventListener("click", function () {
+        if (!r.assets.length) {
+          toast("This release has no asset to download. Attach a .dll or .pack on GitHub.", true);
+          return;
+        }
+        state.selectedRelease = r;
+        renderReleases();
+      });
+
+      node.appendChild(el);
+    });
+
+    if (state.selectedRelease) {
+      var addBtn = document.createElement("button");
+      addBtn.textContent = "Add " + (state.selectedRelease.tag_name || "this release") + " to the catalog…";
+      addBtn.style.marginTop = "6px";
+      addBtn.addEventListener("click", openAddModal);
+      node.appendChild(addBtn);
+    }
+  }
+
+  function retainCount() {
+    var el = document.createElement("div");
+    el.className = "muted";
+    el.textContent = state.releases.length + " release(s)";
+    el.style.marginBottom = "8px";
+    return el;
+  }
+
+  /* ---- Add-mod modal ---- */
+
+  function buildCategoryChecks() {
+    var node = $("fCategories");
+    node.innerHTML = "";
+    CATEGORIES.forEach(function (c) {
+      var label = document.createElement("label");
+      var cb = document.createElement("input");
+      cb.type = "checkbox";
+      cb.value = c.v;
+      label.appendChild(cb);
+      label.appendChild(document.createTextNode(c.l));
+      node.appendChild(label);
+      return cb;
+    });
+  }
+
+  function updateAvatarPreview() {
+    var url = $("fAuthorAvatar").value.trim();
+    var name = $("fAuthorName").value.trim();
+    var pv = $("avatarPreview");
+    pv.innerHTML = "";
+    if (url) {
+      var img = document.createElement("img");
+      img.src = url;
+      img.setAttribute("referrerpolicy", "no-referrer");
+      img.onerror = function () {
+        pv.innerHTML = "";
+        pv.textContent = (name || "?").slice(0, 2).toUpperCase();
+      };
+      pv.appendChild(img);
+    } else {
+      pv.textContent = (name || "?").slice(0, 2).toUpperCase();
+    }
+  }
+
+  async function openAddModal() {
+    var rel = state.selectedRelease;
+    if (!rel || !state.repo) return;
+
+    $("addSummary").innerHTML =
+      '<div class="repo">' + state.repo.owner + "/" + state.repo.name +
+      ' <span class="badge' + (state.repo.arcdevs ? " arcdevs" : "") + '">' +
+      (state.repo.arcdevs ? "ArcDevs.io — original author is manual" : "GitHub author auto-fetched") +
+      '</span></div>' +
+      '<div class="rel">' + (rel.name || rel.tag_name) + ' <span class="badge">' + rel.tag_name + "</span></div>" +
+      '<div class="asst">Downloads the FIRST asset only: <b>' + rel.assets[0].name + "</b> (" + fmtSize(rel.assets[0].size) + ") into Custom_Assets/" +
+      (rel.assets[0].name.toLowerCase().endsWith(".pack") ? "Texture Packs" : "Parts") + ".</div>";
+
+    var author, ownerLogin = state.repo.owner;
+    if (!state.repo.arcdevs) {
+      try { author = await gh("https://api.github.com/users/" + encodeURIComponent(ownerLogin)); } catch (e) { author = null; }
+    }
+
+    var assetBase = rel.assets[0].name.replace(/\.[^.]+$/, "");
+    var fallbackName = rel.name || humanize(state.repo.name);
+    var detSlug = slugify(rel.tag_name.replace(/^v/i, ""));
+
+    $("fModId").value = slugify(fallbackName) + (detSlug && detSlug !== "1" ? "-v" + detSlug : "");
+    $("fModName").value = fallbackName;
+    $("fDescription").value = (rel.body || state.repo.description || "")
+      .split(/\n+/)[0]
+      .replace(/\s+/g, " ").trim()
+      .slice(0, 280);
+
+    buildCategoryChecks();
+    var isPack = rel.assets[0].name.toLowerCase().endsWith(".pack");
+    document.querySelectorAll("#fCategories input").forEach(function (cb) {
+      cb.checked = isPack ? cb.value === "cosmetic" : cb.value === "parts";
+    });
+
+    if (state.repo.arcdevs) {
+      $("fAuthorLabel").textContent = "Original author name (ArcDevs.io-hosted mod)";
+      $("authorHint").textContent = "The mod was published under the ArcDevs.io account — enter the actual creator's name shown in the app.";
+      $("fAuthorName").value = "";
+      $("fAuthorName").placeholder = "e.g. crack-a-toke";
+      $("fAuthorAvatar").value = "";
+      $("fAuthorAvatar").placeholder = "Optional — the app falls back to initials";
+    } else {
+      var ghName = (author && (author.name || author.login)) || ownerLogin;
+      $("fAuthorLabel").textContent = "Author name (GitHub)";
+      $("authorHint").textContent = "Fetched from github.com/" + ownerLogin + " — edit if the display name should differ from the login.";
+      $("fAuthorName").value = ghName;
+      $("fAuthorName").placeholder = "github username";
+      $("fAuthorAvatar").value = "https://github.com/" + ownerLogin + ".png?size=128";
+      $("fAuthorAvatar").placeholder = "https://github.com/owner.png";
+    }
+
+    updateAvatarPreview();
+    $("addModal").classList.remove("hidden");
+  }
+
+  $("fAuthorName").addEventListener("input", updateAvatarPreview);
+  $("fAuthorAvatar").addEventListener("input", updateAvatarPreview);
+
+  $("closeAddModal").addEventListener("click", function () {
+    $("addModal").classList.add("hidden");
+  });
+
+  $("saveModalBtn").addEventListener("click", async function () {
+    var rel = state.selectedRelease;
+    if (!rel || !state.repo) return;
+
+    var modId = $("fModId").value.trim();
+    var modName = $("fModName").value.trim();
+    var authorName = $("fAuthorName").value.trim();
+    if (!modId || !modName || !authorName) {
+      toast("Mod name, ID and author name are required.", true);
+      return;
+    }
+
+    var cats = [];
+    document.querySelectorAll("#fCategories input:checked").forEach(function (cb) { cats.push(cb.value); });
+    if (!cats.length) {
+      toast("Pick at least one category.", true);
+      return;
+    }
+
+    var avatarUrl = $("fAuthorAvatar").value.trim() || undefined;
+
+    var asset = rel.assets[0];
+    var entry = {
+      id: modId,
+      name: modName,
+      description: $("fDescription").value.trim(),
+      author: {
+        id: state.repo.arcdevs ? slugify(authorName) : state.repo.owner,
+        name: authorName,
+        avatarUrl: avatarUrl
+      },
+      repository: {
+        owner: state.repo.owner,
+        name: state.repo.name,
+        url: state.repo.url
+      },
+      latestRelease: {
+        id: rel.id,
+        version: rel.tag_name.replace(/^v/i, "") || "1.0",
+        tagName: rel.tag_name,
+        name: rel.name,
+        body: rel.body,
+        publishedAt: rel.published_at,
+        assets: [{
+          id: asset.id,
+          name: asset.name,
+          size: asset.size,
+          downloadUrl: asset.browser_download_url,
+          contentType: asset.content_type
+        }]
+      },
+      categories: cats,
+      downloadCount: 0
+    };
+    if (!avatarUrl) delete entry.author.avatarUrl;
+
+    var existingIdx = catalog.mods.findIndex(function (m) { return m.id === modId; });
+    if (existingIdx >= 0) {
+      catalog.mods[existingIdx] = entry;
+    } else {
+      catalog.mods.push(entry);
+    }
+
+    $("saveModalBtn").disabled = true;
+    $("saveModalBtn").textContent = "Saving…";
+    try {
+      await rawFetch(API_URL, {
+        method: "POST",
+        body: JSON.stringify({ file: "catalog.json", content: catalog })
+      });
+      toast(existingIdx >= 0 ? "Mod updated in the catalog." : modName + " added to the catalog.");
+      $("addModal").classList.add("hidden");
+      render();
+    } catch (e) {
+      toast("Save failed: " + e.message, true);
+    } finally {
+      $("saveModalBtn").disabled = false;
+      $("saveModalBtn").textContent = "Add to catalog";
+    }
+  });
+
+  /* ---- Raw JSON editors ---- */
+
+  function collectConfig() {
+    return {
+      featuredMods: state.featuredMods.slice(0, 10),
+      featuredModders: state.featuredModders.slice(0, 10),
+      app: {
+        latestVersion: $("fLatestVersion").value.trim(),
+        minimumVersion: $("fMinimumVersion").value.trim(),
+        androidDownloadUrl: $("fAndroidUrl").value.trim(),
+        changelog: $("fChangelog").value.trim()
+      }
+    };
+  }
+
+  $("rawConfigToggle").addEventListener("click", function () {
+    var card = $("rawConfigCard");
+    card.classList.toggle("hidden");
+    if (!card.classList.contains("hidden")) {
+      $("rawConfigTextarea").value = JSON.stringify(collectConfig(), null, 2);
+    }
+  });
+
+  $("rawCatalogToggle").addEventListener("click", function () {
+    var card = $("rawCatalogCard");
+    card.classList.toggle("hidden");
+    if (!card.classList.contains("hidden")) {
+      $("rawCatalogTextarea").value = JSON.stringify(catalog, null, 2);
+    }
+  });
+
+  $("saveBtn").addEventListener("click", async function () {
+    var configJson = collectConfig();
+
+    if (!$("rawConfigCard").classList.contains("hidden")) {
+      try {
+        configJson = JSON.parse($("rawConfigTextarea").value);
+      } catch (e) {
+        toast("Raw config.json is invalid: " + e.message, true);
+        return;
+      }
+    }
+
+    var statusEl = $("saveStatus");
+    statusEl.textContent = "Saving…";
+    try {
+      await rawFetch(API_URL, {
+        method: "POST",
+        body: JSON.stringify({ file: "config.json", content: configJson })
+      });
+
+      if (!$("rawCatalogCard").classList.contains("hidden")) {
+        var catalogDraft;
+        try {
+          catalogDraft = JSON.parse($("rawCatalogTextarea").value);
+        } catch (e) {
+          toast("Raw catalog.json is invalid: " + e.message, true);
+          return;
+        }
+        if (!Array.isArray(catalogDraft.mods)) {
+          toast("catalog.json must contain a mods array.", true);
+          return;
+        }
+        catalog = catalogDraft;
+        await rawFetch(API_URL, {
+          method: "POST",
+          body: JSON.stringify({ file: "catalog.json", content: catalog })
+        });
+        render();
+      }
+
+      toast("Saved. The app will pick it up on next refresh.");
+    } catch (e) {
+      statusEl.textContent = "";
+      toast("Save failed: " + e.message, true);
+      return;
+    }
+    statusEl.textContent = "";
+  });
+})();
+</script>
+</body>
+</html>
