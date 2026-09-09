@@ -4,6 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Dockyard Admin</title>
+<script type="module" src="https://cdn.jsdelivr.net/npm/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+<script type="module" src="https://cdn.jsdelivr.net/npm/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
 <style>
   :root {
     --bg: #0D0D0D;
@@ -304,7 +306,7 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    font-size: 16px;
+    color: var(--text-secondary);
     background: var(--surface-light);
     border: 1px solid var(--border);
     border-radius: 8px;
@@ -312,10 +314,13 @@
     transition: transform .12s ease;
   }
 
-  .badge-icon:hover { transform: translateY(-1px); }
+  .badge-icon ion-icon { pointer-events: none; }
+
+  .badge-icon:hover { transform: translateY(-1px); color: var(--text); }
 
   .badge-icon.selected {
     border-color: var(--primary);
+    color: var(--text);
     box-shadow: 0 0 0 2px rgba(255, 45, 85, .25);
   }
 
@@ -697,18 +702,25 @@
 
       <div class="badge-icons">
         <div class="badge-icons-label">Icon</div>
-        <button type="button" class="badge-icon selected" data-icon="" title="No icon">✕</button>
-        <button type="button" class="badge-icon" data-icon="✦" title="Star">✦</button>
-        <button type="button" class="badge-icon" data-icon="⭐">⭐</button>
-        <button type="button" class="badge-icon" data-icon="🔥">🔥</button>
-        <button type="button" class="badge-icon" data-icon="💎">💎</button>
-        <button type="button" class="badge-icon" data-icon="✅">✅</button>
-        <button type="button" class="badge-icon" data-icon="🏆">🏆</button>
-        <button type="button" class="badge-icon" data-icon="⚡">⚡</button>
-        <button type="button" class="badge-icon" data-icon="🎮">🎮</button>
-        <button type="button" class="badge-icon" data-icon="🚀">🚀</button>
-        <button type="button" class="badge-icon" data-icon="🛠️">🛠️</button>
-        <button type="button" class="badge-icon" data-icon="👑">👑</button>
+        <button type="button" class="badge-icon selected" data-icon="" title="No icon"><ion-icon name="close" size="18"></ion-icon></button>
+        <button type="button" class="badge-icon" data-icon="medal-outline" title="Medal"><ion-icon name="medal-outline"></ion-icon></button>
+        <button type="button" class="badge-icon" data-icon="trophy-outline" title="Trophy"><ion-icon name="trophy-outline"></ion-icon></button>
+        <button type="button" class="badge-icon" data-icon="rocket-outline" title="Rocket"><ion-icon name="rocket-outline"></ion-icon></button>
+        <button type="button" class="badge-icon" data-icon="flame-outline" title="Flame"><ion-icon name="flame-outline"></ion-icon></button>
+        <button type="button" class="badge-icon" data-icon="star-outline" title="Star"><ion-icon name="star-outline"></ion-icon></button>
+        <button type="button" class="badge-icon" data-icon="heart-outline" title="Heart"><ion-icon name="heart-outline"></ion-icon></button>
+        <button type="button" class="badge-icon" data-icon="shield-checkmark-outline" title="Verified shield"><ion-icon name="shield-checkmark-outline"></ion-icon></button>
+        <button type="button" class="badge-icon" data-icon="ribbon-outline" title="Ribbon"><ion-icon name="ribbon-outline"></ion-icon></button>
+        <button type="button" class="badge-icon" data-icon="sparkles-outline" title="Sparkles"><ion-icon name="sparkles-outline"></ion-icon></button>
+        <button type="button" class="badge-icon" data-icon="flash-outline" title="Bolt"><ion-icon name="flash-outline"></ion-icon></button>
+        <button type="button" class="badge-icon" data-icon="bulb-outline" title="Idea"><ion-icon name="bulb-outline"></ion-icon></button>
+        <button type="button" class="badge-icon" data-icon="color-palette-outline" title="Palette"><ion-icon name="color-palette-outline"></ion-icon></button>
+        <button type="button" class="badge-icon" data-icon="game-controller-outline" title="Gaming"><ion-icon name="game-controller-outline"></ion-icon></button>
+        <button type="button" class="badge-icon" data-icon="airplane-outline" title="Aircraft"><ion-icon name="airplane-outline"></ion-icon></button>
+        <button type="button" class="badge-icon" data-icon="build-outline" title="Tools"><ion-icon name="build-outline"></ion-icon></button>
+        <button type="button" class="badge-icon" data-icon="hammer-outline" title="Hammer"><ion-icon name="hammer-outline"></ion-icon></button>
+        <button type="button" class="badge-icon" data-icon="flag-outline" title="Flag"><ion-icon name="flag-outline"></ion-icon></button>
+        <button type="button" class="badge-icon" data-icon="checkmark-circle-outline" title="Check"><ion-icon name="checkmark-circle-outline"></ion-icon></button>
       </div>
     </div>
 
@@ -1251,7 +1263,15 @@
       var pill = document.createElement("span");
       pill.className = "badge-pill";
       pill.style.background = b.color || "#8E8E93";
-      pill.textContent = (b.icon ? b.icon + " " : "") + b.name;
+      if (b.icon && b.icon.match(/^[a-z0-9-]+$/)) {
+        var ic = document.createElement("ion-icon");
+        ic.name = b.icon;
+        ic.setAttribute("size", "12");
+        pill.appendChild(ic);
+      } else if (b.icon) {
+        pill.appendChild(document.createTextNode(b.icon + " "));
+      }
+      pill.appendChild(document.createTextNode(b.name));
 
       var meta = document.createElement("div");
       meta.className = "meta";
