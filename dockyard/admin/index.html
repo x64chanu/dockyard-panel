@@ -416,7 +416,7 @@
 <main>
   <div class="card" id="loginCard">
     <h2>Sign in</h2>
-    <div class="hint">Use the admin token from <code>api/secret.php</code>. Sent as a Bearer header.</div>
+    <div class="hint">Use a GitHub Personal Access Token (classic) with <b>repo</b> scope, or a fine-grained token with <b>Content read/write</b> on <code>x64chanu/admin-dockyard</code>.</div>
     <div class="login">
       <input type="password" id="tokenInput" placeholder="Admin token" autocomplete="off">
       <button id="connectBtn">Connect</button>
@@ -572,7 +572,9 @@
 (function () {
   "use strict";
   var $ = function (id) { return document.getElementById(id); };
-  var API_URL = "../api/index.php";
+  var GH_REPO = "x64chanu/admin-dockyard";
+  var GH_BRANCH = "main";
+  var GH_PATH = "dockyard"; // files live in this subfolder of the repo
   var token = null;
   var catalog = { mods: [] };
   var state = {
@@ -656,6 +658,52 @@
     return data;
   }
 
+  function ghApiPath(file) {
+    return "repos/" + GH_REPO + "/contents/" + GH_PATH + "/" + file;
+  }
+
+  async function apiFetch(path, init) {
+    var headers = { Accept: "application/vnd.github+json" };
+    if (token) headers["Authorization"] = "Bearer " + token;
+    if (init && init.body) headers["Content-Type"] = "application/json";
+    var res = await fetch("https://api.github.com/" + path, Object.assign({ headers: headers }, init));
+    var data = null;
+    try { data = await res.json(); } catch (e) {}
+    if (!res.ok) {
+      throw new Error((data && (data.message || data.error)) || ("GitHub HTTP " + res.status));
+    }
+    return data;
+  }
+
+  function toBase64(text) {
+    return btoa(unescape(encodeURIComponent(text)));
+  }
+
+  // Pushes one of the dockyard JSON files back into the repo (Contents API).
+  // The GitHub Pages rebuild triggered by the push takes ~1 min to go live.
+  async function writeGitFile(file, contentObj) {
+    var content = toBase64(JSON.stringify(contentObj));
+    for (var attempt = 0; attempt < 2; attempt++) {
+      var meta = await apiFetch(ghApiPath(file));
+      var payload = {
+        message: "Dockyard admin: update " + file,
+        content: content,
+        sha: meta.sha,
+        branch: GH_BRANCH
+      };
+      try {
+        return await apiFetch(ghApiPath(file), {
+          method: "PUT",
+          body: JSON.stringify(payload)
+        });
+      } catch (e) {
+        // Concurrent edit (stale sha) → refetch and retry once.
+        if (attempt === 0) continue;
+        throw e;
+      }
+    }
+  }
+
   $("connectBtn").addEventListener("click", async function () {
     token = $("tokenInput").value.trim();
     $("loginError").textContent = "";
@@ -663,12 +711,13 @@
     try {
       var [catalogData, configData] = await Promise.all([
         rawFetch("../catalog.json"),
-        rawFetch(API_URL + "?file=config.json")
+        rawFetch("../config.json")
       ]);
       catalog = Array.isArray(catalogData.mods) ? catalogData : { mods: [] };
       state.featuredMods = Array.isArray(configData.featuredMods) ? configData.featuredMods : [];
       state.featuredModders = Array.isArray(configData.featuredModders) ? configData.featuredModders : [];
       state.app = Object.assign({ latestVersion: "", minimumVersion: "", androidDownloadUrl: "", changelog: "" }, configData.app || {});
+      await apiFetch(ghApiPath("config.json"));
       render();
       $("loginCard").classList.add("hidden");
       $("workspace").classList.remove("hidden");
@@ -1120,11 +1169,9 @@
     $("saveModalBtn").disabled = true;
     $("saveModalBtn").textContent = "Saving…";
     try {
-      await rawFetch(API_URL, {
-        method: "POST",
-        body: JSON.stringify({ file: "catalog.json", content: catalog })
-      });
+      await writeGitFile("catalog.json", catalog);
       toast(existingIdx >= 0 ? "Mod updated in the catalog." : modName + " added to the catalog.");
+      toast("Saved to GitHub — Pages updates in ~1 min.");
       $("addModal").classList.add("hidden");
       render();
     } catch (e) {
@@ -1181,10 +1228,7 @@
     var statusEl = $("saveStatus");
     statusEl.textContent = "Saving…";
     try {
-      await rawFetch(API_URL, {
-        method: "POST",
-        body: JSON.stringify({ file: "config.json", content: configJson })
-      });
+      await writeGitFile("config.json", configJson);
 
       if (!$("rawCatalogCard").classList.contains("hidden")) {
         var catalogDraft;
@@ -1199,14 +1243,11 @@
           return;
         }
         catalog = catalogDraft;
-        await rawFetch(API_URL, {
-          method: "POST",
-          body: JSON.stringify({ file: "catalog.json", content: catalog })
-        });
+        await writeGitFile("catalog.json", catalog);
         render();
       }
 
-      toast("Saved. The app will pick it up on next refresh.");
+      toast("Saved to GitHub — Pages updates in ~1 min.");
     } catch (e) {
       statusEl.textContent = "";
       toast("Save failed: " + e.message, true);
