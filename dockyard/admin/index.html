@@ -670,7 +670,7 @@
     var data = null;
     try { data = await res.json(); } catch (e) {}
     if (!res.ok) {
-      throw new Error((data && (data.message || data.error)) || ("GitHub HTTP " + res.status));
+      throw new Error("GitHub API " + res.status + ": " + ((data && (data.message || data.error)) || res.statusText));
     }
     return data;
   }
