@@ -271,19 +271,83 @@
     cursor: pointer;
   }
 
-  .badge-verified-check {
+  .badge-sep {
+    margin-top: 20px;
+    padding-top: 16px;
+    border-top: 1px solid var(--border);
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+    color: var(--text-muted);
+  }
+
+  .badge-icons {
     display: flex;
     align-items: center;
     gap: 6px;
+    flex-wrap: wrap;
+    margin-top: 12px;
+  }
+
+  .badge-icons-label {
     font-size: 12px;
     font-weight: 700;
     color: var(--text-secondary);
-    padding-bottom: 11px;
+    margin-right: 4px;
+  }
+
+  .badge-icon {
+    min-width: 34px;
+    height: 34px;
+    padding: 0 8px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    background: var(--surface-light);
+    border: 1px solid var(--border);
+    border-radius: 8px;
     cursor: pointer;
-    white-space: nowrap;
+    transition: transform .12s ease;
+  }
+
+  .badge-icon:hover { transform: translateY(-1px); }
+
+  .badge-icon.selected {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 2px rgba(255, 45, 85, .25);
+  }
+
+  .badge-verified-check {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--text-secondary);
+    cursor: pointer;
   }
 
   .badge-verified-check input { accent-color: var(--primary); }
+
+  .badge-verified-preview {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 18px;
+    height: 18px;
+    border-radius: 9px;
+    border-top-left-radius: 11px;
+    border-top-right-radius: 6px;
+    border-bottom-left-radius: 6px;
+    border-bottom-right-radius: 5px;
+    background: #1DA1F2;
+    color: #fff;
+    font-size: 11px;
+    line-height: 18px;
+    flex: none;
+  }
 
   .save-row {
     display: flex;
@@ -614,7 +678,7 @@
 
     <div class="card">
       <h2>Modder badges</h2>
-      <div class="hint">Badges (like the blue Verified check) appear next to a modder's name across the app. Pick a modder, add badges with a custom name + color, and remove them anytime.</div>
+      <div class="hint">Pick a modder, toggle their Verified check (the blue social-style badge), and add custom badges with a name, color and icon. Everything shows next to their name across the app.</div>
 
       <div class="field">
         <label>Modder</label>
@@ -623,11 +687,28 @@
 
       <div class="badge-list" id="badgeList"></div>
 
+      <div class="badge-sep">New custom badge</div>
+
       <div class="badge-add">
-        <input type="text" id="badgeName" placeholder="Badge name (e.g. Verified)">
-        <input type="color" id="badgeColor" value="#1DA1F2" title="Badge color">
-        <label class="badge-verified-check"><input type="checkbox" id="badgeVerified"> Verified check</label>
+        <input type="text" id="badgeName" placeholder="Badge name (e.g. Team)" maxlength="24">
+        <input type="color" id="badgeColor" value="#8E8E93" title="Badge color">
         <button class="secondary" id="addBadgeBtn">Add badge</button>
+      </div>
+
+      <div class="badge-icons">
+        <div class="badge-icons-label">Icon</div>
+        <button type="button" class="badge-icon selected" data-icon="" title="No icon">✕</button>
+        <button type="button" class="badge-icon" data-icon="✦" title="Star">✦</button>
+        <button type="button" class="badge-icon" data-icon="⭐">⭐</button>
+        <button type="button" class="badge-icon" data-icon="🔥">🔥</button>
+        <button type="button" class="badge-icon" data-icon="💎">💎</button>
+        <button type="button" class="badge-icon" data-icon="✅">✅</button>
+        <button type="button" class="badge-icon" data-icon="🏆">🏆</button>
+        <button type="button" class="badge-icon" data-icon="⚡">⚡</button>
+        <button type="button" class="badge-icon" data-icon="🎮">🎮</button>
+        <button type="button" class="badge-icon" data-icon="🚀">🚀</button>
+        <button type="button" class="badge-icon" data-icon="🛠️">🛠️</button>
+        <button type="button" class="badge-icon" data-icon="👑">👑</button>
       </div>
     </div>
 
@@ -719,7 +800,7 @@
   var state = {
     featuredMods: [],
     featuredModders: [],
-    authorBadges: {}, // authorId -> [{ name, color, verified }]
+    authorBadges: {}, // authorId -> { verified?, badges: [{ name, color, icon }] }
     app: { latestVersion: "", minimumVersion: "", androidDownloadUrl: "", changelog: "" },
     repo: null,      // { owner, name, url, description, arcdevs }
     releases: [],    // GitHub release objects
@@ -870,6 +951,11 @@
       state.featuredModders = Array.isArray(configData.featuredModders) ? configData.featuredModders : [];
       state.authorBadges = (configData.authorBadges && typeof configData.authorBadges === "object" && !Array.isArray(configData.authorBadges))
         ? configData.authorBadges : {};
+      // Migrate legacy array form (authorId -> badges[]) to the new shape.
+      Object.keys(state.authorBadges).forEach(function (id) {
+        var e = state.authorBadges[id];
+        if (Array.isArray(e)) state.authorBadges[id] = { badges: e.filter(function (b) { return b && typeof b === "object"; }) };
+      });
       state.app = Object.assign({ latestVersion: "", minimumVersion: "", androidDownloadUrl: "", changelog: "" }, configData.app || {});
       await apiFetch(ghApiPath("config.json"));
       render();
@@ -1082,13 +1168,20 @@
 
   /* ---- Modder badges ---- */
 
+  var selectedBadgeIcon = "";
+
   function badgeModderId() {
     return $("badgeModderPicker").value;
   }
 
-  function modderBadges(id) {
-    if (!id || !state.authorBadges || !state.authorBadges[id]) return [];
+  function modderSettings(id) {
+    if (!id || !state.authorBadges || !state.authorBadges[id]) return null;
     return state.authorBadges[id];
+  }
+
+  function modderBadges(id) {
+    var s = modderSettings(id);
+    return (s && s.badges) || [];
   }
 
   function renderBadgeModders() {
@@ -1114,11 +1207,43 @@
       node.innerHTML = '<div class="empty-list">Pick a modder to manage their badges.</div>';
       return;
     }
+
+    var s = modderSettings(id);
+
+    var verifiedRow = document.createElement("div");
+    verifiedRow.className = "badge-verified-check";
+    var vbox = document.createElement("input");
+    vbox.type = "checkbox";
+    vbox.checked = !!(s && s.verified);
+    vbox.addEventListener("change", function () {
+      if (!state.authorBadges[id]) state.authorBadges[id] = {};
+      if (vbox.checked) state.authorBadges[id].verified = true;
+      else if (state.authorBadges[id]) delete state.authorBadges[id].verified;
+      if (state.authorBadges[id] &&
+          !state.authorBadges[id].verified &&
+          !(state.authorBadges[id].badges && state.authorBadges[id].badges.length)) {
+        delete state.authorBadges[id];
+      }
+      renderBadgeList();
+      toast(vbox.checked ? "Verified check added — hit Save to publish." : "Verified check removed — hit Save to publish.");
+    });
+    var vtxt = document.createElement("span");
+    vtxt.textContent = "Verified modder";
+    var vprev = document.createElement("span");
+    vprev.className = "badge-verified-preview";
+    vprev.textContent = "\u2713";
+    verifiedRow.appendChild(vbox); verifiedRow.appendChild(vprev); verifiedRow.appendChild(vtxt);
+    node.appendChild(verifiedRow);
+
     var badges = modderBadges(id);
-    if (!badges.length) {
-      node.innerHTML = '<div class="empty-list">No badges for this modder yet.</div>';
+    if (badges.length === 0) {
+      var empty = document.createElement("div");
+      empty.className = "empty-list";
+      empty.textContent = "No custom badges for this modder yet.";
+      node.appendChild(empty);
       return;
     }
+
     badges.forEach(function (b, idx) {
       var el = document.createElement("div");
       el.className = "badge-row";
@@ -1126,7 +1251,7 @@
       var pill = document.createElement("span");
       pill.className = "badge-pill";
       pill.style.background = b.color || "#8E8E93";
-      pill.textContent = (b.verified ? "\u2713 " : "") + b.name;
+      pill.textContent = (b.icon ? b.icon + " " : "") + b.name;
 
       var meta = document.createElement("div");
       meta.className = "meta";
@@ -1135,13 +1260,16 @@
       nm.textContent = b.name;
       var idEl = document.createElement("div");
       idEl.className = "id";
-      idEl.textContent = (b.color || "#8E8E93").toUpperCase() + (b.verified ? " · verified" : "");
+      idEl.textContent = (b.color || "#8E8E93").toUpperCase() + (b.icon ? "  ·  " + b.icon : "");
       meta.appendChild(nm); meta.appendChild(idEl);
 
       var tools = document.createElement("div");
       tools.className = "tools";
       var rm = mkTool("✕", true, function () {
         badges.splice(idx, 1);
+        if (badges.length === 0 && state.authorBadges[id] && !state.authorBadges[id].verified) {
+          delete state.authorBadges[id];
+        }
         renderBadgeList();
       }, true);
       tools.appendChild(rm);
@@ -1151,7 +1279,22 @@
     });
   }
 
-  $("badgeModderPicker").addEventListener("change", renderBadgeList);
+  $("badgeModderPicker").addEventListener("change", function () {
+    selectedBadgeIcon = "";
+    document.querySelectorAll(".badge-icon").forEach(function (b) {
+      b.classList.toggle("selected", b.getAttribute("data-icon") === "");
+    });
+    renderBadgeList();
+  });
+
+  document.querySelectorAll(".badge-icon").forEach(function (b) {
+    b.addEventListener("click", function () {
+      selectedBadgeIcon = b.getAttribute("data-icon") || "";
+      document.querySelectorAll(".badge-icon").forEach(function (x) {
+        x.classList.toggle("selected", x === b);
+      });
+    });
+  });
 
   $("addBadgeBtn").addEventListener("click", function () {
     var id = badgeModderId();
@@ -1159,13 +1302,13 @@
     var name = $("badgeName").value.trim();
     if (!name) { toast("Enter a badge name.", true); return; }
     var color = $("badgeColor").value || "#8E8E93";
-    var verified = $("badgeVerified").checked;
+    var icon = selectedBadgeIcon || undefined;
 
-    if (!state.authorBadges[id]) state.authorBadges[id] = [];
-    state.authorBadges[id].push({ name: name, color: color, verified: verified || undefined });
+    if (!state.authorBadges[id]) state.authorBadges[id] = {};
+    if (!state.authorBadges[id].badges) state.authorBadges[id].badges = [];
+    state.authorBadges[id].badges.push({ name: name, color: color, icon: icon });
 
     $("badgeName").value = "";
-    $("badgeVerified").checked = false;
     renderBadgeList();
     toast("Badge added — hit Save changes to publish.");
   });
