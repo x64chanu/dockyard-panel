@@ -1,4 +1,1 @@
-{
-  "version": 1,
-  "mods": []
-}
+{"version":1,"mods":[{"id":"npe-added-v0-3-0","name":"NPE Added!","description":"Custom Parts and Mod for Spaceflight Simulator that are out of this world!","author":{"id":"EmberSkyMedia","name":"PicoSpace Industries / EmberSkyMedia","avatarUrl":"https://github.com/EmberSkyMedia.png?size=128"},"repository":{"owner":"EmberSkyMedia","name":"SFS_ESM_Exotics","url":"https://github.com/EmberSkyMedia/SFS_ESM_Exotics"},"latestRelease":{"id":78507737,"version":"0.3.0","tagName":"0.3.0","name":"NPE Added!","body":"","publishedAt":"2022-09-28T22:07:04Z","assets":[{"id":79343914,"name":"PicoSpace_Exotic_V0.3.0.pack","size":447225,"downloadUrl":"https://github.com/EmberSkyMedia/SFS_ESM_Exotics/releases/download/0.3.0/PicoSpace_Exotic_V0.3.0.pack","contentType":"application/octet-stream"}]},"categories":["engines","utility","parts"],"downloadCount":0}]}
