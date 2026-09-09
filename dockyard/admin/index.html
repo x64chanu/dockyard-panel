@@ -222,6 +222,69 @@
     border-radius: 10px;
   }
 
+  /* ---- Modder badges ---- */
+
+  .badge-list { margin-top: 14px; }
+
+  .badge-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: var(--surface-light);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 8px 12px;
+    margin-bottom: 8px;
+  }
+
+  .badge-row .meta { flex: 1; min-width: 0; }
+  .badge-row .meta .name { font-size: 13px; font-weight: 800; }
+  .badge-row .meta .id { color: var(--text-muted); font-size: 11px; }
+
+  .badge-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 3px 10px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 800;
+    color: #fff;
+  }
+
+  .badge-add {
+    display: flex;
+    gap: 10px;
+    align-items: flex-end;
+    flex-wrap: wrap;
+    margin-top: 14px;
+  }
+
+  .badge-add input[type=text] { flex: 1 1 160px; }
+  .badge-add input[type=color] {
+    width: 52px;
+    height: 40px;
+    padding: 2px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: var(--surface-light);
+    cursor: pointer;
+  }
+
+  .badge-verified-check {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--text-secondary);
+    padding-bottom: 11px;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+
+  .badge-verified-check input { accent-color: var(--primary); }
+
   .save-row {
     display: flex;
     gap: 10px;
@@ -549,6 +612,25 @@
       <div class="ordered-list" id="featuredModdersList"></div>
     </div>
 
+    <div class="card">
+      <h2>Modder badges</h2>
+      <div class="hint">Badges (like the blue Verified check) appear next to a modder's name across the app. Pick a modder, add badges with a custom name + color, and remove them anytime.</div>
+
+      <div class="field">
+        <label>Modder</label>
+        <select id="badgeModderPicker"></select>
+      </div>
+
+      <div class="badge-list" id="badgeList"></div>
+
+      <div class="badge-add">
+        <input type="text" id="badgeName" placeholder="Badge name (e.g. Verified)">
+        <input type="color" id="badgeColor" value="#1DA1F2" title="Badge color">
+        <label class="badge-verified-check"><input type="checkbox" id="badgeVerified"> Verified check</label>
+        <button class="secondary" id="addBadgeBtn">Add badge</button>
+      </div>
+    </div>
+
     <div class="save-row">
       <span id="saveStatus" class="muted"></span>
       <button class="secondary" id="rawConfigToggle">Edit raw config.json</button>
@@ -637,6 +719,7 @@
   var state = {
     featuredMods: [],
     featuredModders: [],
+    authorBadges: {}, // authorId -> [{ name, color, verified }]
     app: { latestVersion: "", minimumVersion: "", androidDownloadUrl: "", changelog: "" },
     repo: null,      // { owner, name, url, description, arcdevs }
     releases: [],    // GitHub release objects
@@ -681,6 +764,12 @@
   function humanize(s) {
     if (!s) return "";
     return s.replace(/[-_]/g, " ").replace(/\b\w/g, function (c) { return c.toUpperCase(); });
+  }
+
+  function esc(s) {
+    return String(s).replace(/[&<>"']/g, function (c) {
+      return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
+    });
   }
 
   function slugify(s) {
@@ -779,6 +868,8 @@
       catalog = Array.isArray(catalogData.mods) ? catalogData : { mods: [] };
       state.featuredMods = Array.isArray(configData.featuredMods) ? configData.featuredMods : [];
       state.featuredModders = Array.isArray(configData.featuredModders) ? configData.featuredModders : [];
+      state.authorBadges = (configData.authorBadges && typeof configData.authorBadges === "object" && !Array.isArray(configData.authorBadges))
+        ? configData.authorBadges : {};
       state.app = Object.assign({ latestVersion: "", minimumVersion: "", androidDownloadUrl: "", changelog: "" }, configData.app || {});
       await apiFetch(ghApiPath("config.json"));
       render();
@@ -803,6 +894,7 @@
     $("fChangelog").value = state.app.changelog;
 
     renderCatalogManagers();
+    renderBadgeModders();
 
     renderPicker("modPicker", catalog.mods.map(function (m) {
       return { id: m.id, label: m.name + "  (by " + m.author.name + ")" };
@@ -984,7 +1076,98 @@
     });
     state.featuredMods = state.featuredMods.filter(function (f) { return !removedIds[f]; });
     state.featuredModders = state.featuredModders.filter(function (f) { return f !== id; });
+    if (state.authorBadges && state.authorBadges[id]) delete state.authorBadges[id];
     persistCatalogAfterDelete();
+  });
+
+  /* ---- Modder badges ---- */
+
+  function badgeModderId() {
+    return $("badgeModderPicker").value;
+  }
+
+  function modderBadges(id) {
+    if (!id || !state.authorBadges || !state.authorBadges[id]) return [];
+    return state.authorBadges[id];
+  }
+
+  function renderBadgeModders() {
+    var sel = $("badgeModderPicker");
+    var current = sel.value;
+    sel.innerHTML = '<option value="">Choose…</option>';
+    modderList().forEach(function (m) {
+      var opt = document.createElement("option");
+      opt.value = m.id;
+      opt.textContent = m.name + "  (" + m.modCount + " mod" + (m.modCount === 1 ? "" : "s") + ")";
+      sel.appendChild(opt);
+    });
+    if (current && !modderList().some(function (m) { return m.id === current; })) current = "";
+    sel.value = current || "";
+    renderBadgeList();
+  }
+
+  function renderBadgeList() {
+    var node = $("badgeList");
+    node.innerHTML = "";
+    var id = badgeModderId();
+    if (!id) {
+      node.innerHTML = '<div class="empty-list">Pick a modder to manage their badges.</div>';
+      return;
+    }
+    var badges = modderBadges(id);
+    if (!badges.length) {
+      node.innerHTML = '<div class="empty-list">No badges for this modder yet.</div>';
+      return;
+    }
+    badges.forEach(function (b, idx) {
+      var el = document.createElement("div");
+      el.className = "badge-row";
+
+      var pill = document.createElement("span");
+      pill.className = "badge-pill";
+      pill.style.background = b.color || "#8E8E93";
+      pill.textContent = (b.verified ? "\u2713 " : "") + b.name;
+
+      var meta = document.createElement("div");
+      meta.className = "meta";
+      var nm = document.createElement("div");
+      nm.className = "name";
+      nm.textContent = b.name;
+      var idEl = document.createElement("div");
+      idEl.className = "id";
+      idEl.textContent = (b.color || "#8E8E93").toUpperCase() + (b.verified ? " · verified" : "");
+      meta.appendChild(nm); meta.appendChild(idEl);
+
+      var tools = document.createElement("div");
+      tools.className = "tools";
+      var rm = mkTool("✕", true, function () {
+        badges.splice(idx, 1);
+        renderBadgeList();
+      }, true);
+      tools.appendChild(rm);
+
+      el.appendChild(pill); el.appendChild(meta); el.appendChild(tools);
+      node.appendChild(el);
+    });
+  }
+
+  $("badgeModderPicker").addEventListener("change", renderBadgeList);
+
+  $("addBadgeBtn").addEventListener("click", function () {
+    var id = badgeModderId();
+    if (!id) { toast("Pick a modder first.", true); return; }
+    var name = $("badgeName").value.trim();
+    if (!name) { toast("Enter a badge name.", true); return; }
+    var color = $("badgeColor").value || "#8E8E93";
+    var verified = $("badgeVerified").checked;
+
+    if (!state.authorBadges[id]) state.authorBadges[id] = [];
+    state.authorBadges[id].push({ name: name, color: color, verified: verified || undefined });
+
+    $("badgeName").value = "";
+    $("badgeVerified").checked = false;
+    renderBadgeList();
+    toast("Badge added — hit Save changes to publish.");
   });
 
   /* ---- GitHub repo + release picker ---- */
@@ -1353,6 +1536,7 @@
     return {
       featuredMods: state.featuredMods.slice(0, 10),
       featuredModders: state.featuredModders.slice(0, 10),
+      authorBadges: state.authorBadges,
       app: {
         latestVersion: $("fLatestVersion").value.trim(),
         minimumVersion: $("fMinimumVersion").value.trim(),
