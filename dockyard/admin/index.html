@@ -416,7 +416,7 @@
 <main>
   <div class="card" id="loginCard">
     <h2>Sign in</h2>
-    <div class="hint">Use a GitHub Personal Access Token (classic) with <b>repo</b> scope, or a fine-grained token with <b>Content read/write</b> on <code>x64chanu/admin-dockyard</code>.</div>
+    <div class="hint">Use a GitHub Personal Access Token (classic) with <b>repo</b> scope, or a fine-grained token with <b>Content read/write</b> on <code>x64chanu/dockyard-panel</code>.</div>
     <div class="login">
       <input type="password" id="tokenInput" placeholder="Admin token" autocomplete="off">
       <button id="connectBtn">Connect</button>
@@ -572,7 +572,7 @@
 (function () {
   "use strict";
   var $ = function (id) { return document.getElementById(id); };
-  var GH_REPO = "x64chanu/admin-dockyard";
+  var GH_REPO = "x64chanu/dockyard-panel";
   var GH_BRANCH = "main";
   var GH_PATH = "dockyard"; // files live in this subfolder of the repo
   var token = null;

@@ -4,7 +4,7 @@
   "app": {
     "latestVersion": "1.0.0",
     "minimumVersion": "1.0.0",
-    "androidDownloadUrl": "https://github.com/x64chanu/admin-dockyard/releases/latest/download/dockyard.apk",
+    "androidDownloadUrl": "https://github.com/x64chanu/dockyard-panel/releases/latest/download/dockyard.apk",
     "changelog": ""
   }
 }
