@@ -850,11 +850,12 @@
 
           <div class="badge-sep">New custom badge</div>
 
-          <div class="badge-add">
-            <input type="text" id="badgeName" placeholder="Badge name (e.g. Team)" maxlength="24">
-            <input type="color" id="badgeColor" value="#8E8E93" title="Badge color">
-            <button class="secondary" id="addBadgeBtn">Add badge</button>
-          </div>
+<div class="badge-add">
+        <input type="text" id="badgeName" placeholder="Badge name (e.g. Team)" maxlength="24">
+        <input type="color" id="badgeColor" value="#8E8E93" title="Badge color">
+        <input type="color" id="badgeIconColor" value="#FFFFFF" title="Icon color">
+        <button class="secondary" id="addBadgeBtn">Add badge</button>
+      </div>
 
           <div class="badge-icons">
             <div class="badge-icons-label">Icon</div>
@@ -1634,6 +1635,7 @@
         var ic = document.createElement("ion-icon");
         ic.name = b.icon;
         ic.setAttribute("size", "12");
+        ic.style.color = b.iconColor || "#FFFFFF";
         pill.appendChild(ic);
       } else if (b.icon) {
         pill.appendChild(document.createTextNode(b.icon + " "));
@@ -1647,7 +1649,7 @@
       nm.textContent = b.name;
       var idEl = document.createElement("div");
       idEl.className = "id";
-      idEl.textContent = (b.color || "#8E8E93").toUpperCase() + (b.icon ? "  ·  " + b.icon : "");
+      idEl.textContent = (b.color || "#8E8E93").toUpperCase() + (b.icon ? "  ·  " + b.icon : "") + (b.iconColor ? "  ·  icon " + b.iconColor.toUpperCase() : "");
       meta.appendChild(nm); meta.appendChild(idEl);
 
       var tools = document.createElement("div");
@@ -1689,11 +1691,12 @@
     var name = $("badgeName").value.trim();
     if (!name) { toast("Enter a badge name.", true); return; }
     var color = $("badgeColor").value || "#8E8E93";
+    var iconColor = $("badgeIconColor").value || "#FFFFFF";
     var icon = selectedBadgeIcon || undefined;
 
     if (!state.authorBadges[id]) state.authorBadges[id] = {};
     if (!state.authorBadges[id].badges) state.authorBadges[id].badges = [];
-    state.authorBadges[id].badges.push({ name: name, color: color, icon: icon });
+    state.authorBadges[id].badges.push({ name: name, color: color, icon: icon, iconColor: iconColor });
 
     $("badgeName").value = "";
     renderBadgeList();
