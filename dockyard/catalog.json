@@ -1,39 +1,4 @@
 {
   "version": 1,
-  "mods": [
-    {
-      "id": "parteditor",
-      "name": "PartEditor",
-      "description": "PartEditor lets you edit part properties in Spaceflight Simulator. Its releases are pulled live from the cucumber-sp/PartEditor GitHub repository.",
-      "author": {
-        "id": "cucumber-sp",
-        "name": "cucumber-sp",
-        "avatarUrl": "https://github.com/cucumber-sp.png"
-      },
-      "repository": {
-        "owner": "cucumber-sp",
-        "name": "PartEditor",
-        "url": "https://github.com/cucumber-sp/PartEditor"
-      },
-      "latestRelease": {
-        "id": 87661847,
-        "version": "1.0",
-        "tagName": "v1.0",
-        "name": "First Release",
-        "body": "Rewriten 90% of code. New GUI. Integration with UITools (auto update, resizable gui etc).",
-        "publishedAt": "2023-01-01T18:29:31Z",
-        "assets": [
-          {
-            "id": 90175686,
-            "name": "PartEditor.dll",
-            "size": 19456,
-            "downloadUrl": "https://github.com/cucumber-sp/PartEditor/releases/download/v1.0/PartEditor.dll",
-            "contentType": "application/x-msdownload"
-          }
-        ]
-      },
-      "categories": ["utility"],
-      "downloadCount": 576653
-    }
-  ]
+  "mods": []
 }
