@@ -546,195 +546,410 @@
 
   .muted { color: var(--text-muted); font-size: 12px; }
   .hidden { display: none !important; }
+
+  /* ---- Dashboard layout ---- */
+
+  .login-screen {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+  }
+
+  .login-screen .card { max-width: 440px; width: 100%; }
+  .login-screen .card h2 { font-size: 18px; text-transform: none; letter-spacing: 0; }
+  .login-screen .card .hint { margin-bottom: 18px; }
+  .login-screen .login { flex-direction: column; gap: 10px; }
+  .login-screen .login input { padding: 12px 14px; }
+
+  .app { display: flex; min-height: 100vh; }
+
+  .sidebar {
+    width: 236px;
+    flex-shrink: 0;
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+    padding: 18px 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    position: sticky;
+    top: 0;
+    height: 100vh;
+  }
+
+  .sidebar .brand { padding: 6px 10px 16px; }
+  .sidebar .brand .logo { font-size: 17px; font-weight: 800; letter-spacing: -.3px; }
+  .sidebar .brand .logo span { color: var(--primary); }
+  .sidebar .brand .tag { color: var(--text-muted); font-size: 11px; font-weight: 700; margin-top: 2px; }
+
+  .sidebar nav { display: flex; flex-direction: column; gap: 2px; }
+
+  .sidebar nav button.nav {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    padding: 10px 12px;
+    background: transparent;
+    color: var(--text-secondary);
+    border: none;
+    border-radius: 10px;
+    text-align: left;
+    font-size: 13px;
+    font-weight: 800;
+  }
+
+  .sidebar nav button.nav:hover { background: var(--surface-light); color: var(--text); opacity: 1; }
+  .sidebar nav button.nav.active { background: var(--primary); color: #fff; }
+  .sidebar nav button.nav ion-icon { font-size: 18px; flex-shrink: 0; }
+
+  .sidebar .side-foot {
+    margin-top: auto;
+    padding-top: 14px;
+    border-top: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .sidebar .side-foot .conn {
+    font-size: 11px;
+    font-weight: 800;
+    color: var(--text-muted);
+    padding: 0 6px;
+  }
+
+  .sidebar .side-foot .conn.online { color: var(--success); }
+  .sidebar .side-foot .conn.offline { color: var(--danger); }
+
+  .sidebar .side-foot button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+
+  .main-wrap {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .topbar {
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 14px 28px;
+    background: rgba(13,13,13,.92);
+    -webkit-backdrop-filter: blur(6px);
+    backdrop-filter: blur(6px);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .topbar h1 { font-size: 16px; font-weight: 800; }
+  .topbar h1 span { color: var(--primary); }
+  .topbar .right { display: flex; align-items: center; gap: 10px; }
+  .topbar .right button { display: inline-flex; align-items: center; gap: 6px; padding: 8px 14px; font-size: 12px; }
+
+  main { max-width: 860px; width: 100%; margin: 0 auto; padding: 24px 24px 8px; }
+
+  .section:not(.hidden) { display: block; }
+
+  .stat-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 16px; }
+
+  .stat {
+    background: var(--surface-light);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 12px 14px;
+  }
+
+  .stat .num { font-size: 20px; font-weight: 800; }
+  .stat .lbl {
+    color: var(--text-muted);
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-top: 2px;
+  }
+
+  .savebar {
+    position: sticky;
+    bottom: 14px;
+    z-index: 20;
+    align-self: center;
+    max-width: 860px;
+    width: calc(100% - 48px);
+    padding: 12px 16px;
+    background: var(--surface);
+    border: 1px solid var(--border-light);
+    border-radius: 14px;
+    box-shadow: 0 -6px 24px rgba(0,0,0,.35);
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+
+  .savebar .muted { margin-right: auto; }
+
+  @media (max-width: 720px) {
+    .sidebar { width: 64px; padding: 14px 8px; }
+    .sidebar .brand .tag,
+    .sidebar nav button.nav span,
+    .sidebar .side-foot button span { display: none; }
+    .sidebar nav button.nav { justify-content: center; padding: 10px 4px; }
+    .sidebar .brand { padding: 6px 4px 14px; text-align: center; }
+    .topbar { padding: 12px 16px; }
+    .topbar h1 { display: none; }
+    main { padding: 16px 16px 8px; }
+    .savebar { width: calc(100% - 32px); }
+    .stat-row { grid-template-columns: repeat(2, 1fr); }
+  }
 </style>
 </head>
 <body>
-<header>
-  <div>
-    <h1>Dockyard <span>Admin</span></h1>
-    <div class="sub">Featured picks, app updates &amp; mod catalog</div>
-  </div>
-  <div id="connStatus" class="status">Disconnected</div>
-</header>
-
-<main>
-  <div class="card" id="loginCard">
-    <h2>Sign in</h2>
-    <div class="hint">Authorized access required.</div>
+<div class="login-screen" id="loginCard">
+  <div class="card">
+    <h2>Dockyard Admin</h2>
+    <div class="hint">Authorized access required. Your token is kept in this browser — reloading keeps you signed in.</div>
     <div class="login">
       <input type="password" id="tokenInput" placeholder="Admin token" autocomplete="off">
       <button id="connectBtn">Connect</button>
     </div>
     <div id="loginError" class="hint" style="color:var(--danger);margin-top:10px;"></div>
   </div>
+</div>
 
-  <div id="workspace" class="hidden">
-    <div class="card">
-      <h2>App update</h2>
-      <div class="hint">Bump <b>latestVersion</b> above the installed app version to show users a new build is available.</div>
-      <div class="row">
-        <div class="field">
-          <label>Latest version</label>
-          <input type="text" id="fLatestVersion" placeholder="1.1.0">
-        </div>
-        <div class="field">
-          <label>Minimum version</label>
-          <input type="text" id="fMinimumVersion" placeholder="1.0.0">
-        </div>
-      </div>
-      <div class="field">
-        <label>APK download URL</label>
-        <input type="url" id="fAndroidUrl" placeholder="https://apps.heychano.xyz/dockyard/builds/dockyard.apk">
-      </div>
-      <div class="field">
-        <label>Changelog</label>
-        <textarea id="fChangelog" placeholder="What changed in this build?"></textarea>
+<div class="app hidden" id="app">
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="logo">Dockyard <span>Admin</span></div>
+      <div class="tag">content dashboard</div>
+    </div>
+    <nav>
+      <button type="button" class="nav" data-sec="mods"><ion-icon name="grid-outline"></ion-icon><span>Mods</span></button>
+      <button type="button" class="nav" data-sec="featured"><ion-icon name="star-outline"></ion-icon><span>Featured</span></button>
+      <button type="button" class="nav" data-sec="modders"><ion-icon name="people-outline"></ion-icon><span>Modders</span></button>
+      <button type="button" class="nav" data-sec="delete"><ion-icon name="trash-outline"></ion-icon><span>Delete</span></button>
+      <button type="button" class="nav" data-sec="settings"><ion-icon name="settings-outline"></ion-icon><span>Settings</span></button>
+    </nav>
+    <div class="side-foot">
+      <div class="conn offline" id="sideStatus">Disconnected</div>
+      <button class="ghost" id="logoutBtn"><ion-icon name="log-out-outline"></ion-icon><span>Log out</span></button>
+    </div>
+  </aside>
+
+  <div class="main-wrap">
+    <div class="topbar">
+      <h1>Dockyard <span>Admin</span></h1>
+      <div class="right">
+        <div id="connStatus" class="status">Disconnected</div>
+        <button class="secondary" id="refreshBtn"><ion-icon name="refresh-outline"></ion-icon><span>Fetch</span></button>
       </div>
     </div>
 
-    <div class="card">
-      <h2>Add a mod</h2>
-      <div class="hint">Mods only reach the app once you add them here — nothing on GitHub releases loads automatically. Two sources: the <b>Dockyard store</b> (ArcDevs re-hosts the author's mod as one release on ArcDevsio/Dockyard; the app is pinned to exactly the release you pick) or a <b>mod owner's repo</b> (the app follows their newest release live).</div>
+    <main>
+      <section class="section" id="sec-mods">
+        <div class="card">
+          <h2>Catalog</h2>
+          <div class="hint">Everything that's live in the app right now. This page talks to GitHub directly — hit <b>Fetch</b> in the top bar to pull the latest copy, or it auto-refreshes every 30 seconds.</div>
 
-      <div class="source-switch">
-        <button class="seg active" id="srcStoreBtn" type="button">Dockyard store</button>
-        <button class="seg" id="srcRepoBtn" type="button">Mod owner's repo</button>
-      </div>
+          <div class="stat-row">
+            <div class="stat"><div class="num" id="statMods">0</div><div class="lbl">Mods</div></div>
+            <div class="stat"><div class="num" id="statModders">0</div><div class="lbl">Modders</div></div>
+            <div class="stat"><div class="num" id="statFeatured">0</div><div class="lbl">Featured</div></div>
+            <div class="stat"><div class="num" id="statBadged">0</div><div class="lbl">Badged</div></div>
+          </div>
 
-      <div class="pick-repo">
-        <div id="storeBar" class="muted">
-          <div>Fetching from <b>ArcDevsio/Dockyard</b> — one release = one re-hosted mod. Pick a release below, then review before adding.</div>
+          <div class="ordered-list" id="catalogList"></div>
         </div>
-        <div class="in hidden" id="repoBar">
+
+        <div class="card">
+          <h2>Add a mod</h2>
+          <div class="hint">Mods only reach the app once you add them here — nothing on GitHub releases loads automatically. Two sources: the <b>Dockyard store</b> (ArcDevs re-hosts the author's mod as one release on ArcDevsio/Dockyard; the app is pinned to exactly the release you pick) or a <b>mod owner's repo</b> (the app follows their newest release live).</div>
+
+          <div class="source-switch">
+            <button class="seg active" id="srcStoreBtn" type="button">Dockyard store</button>
+            <button class="seg" id="srcRepoBtn" type="button">Mod owner's repo</button>
+          </div>
+
+          <div class="pick-repo">
+            <div id="storeBar" class="muted">
+              <div>Fetching from <b>ArcDevsio/Dockyard</b> — one release = one re-hosted mod. Pick a release below, then review before adding.</div>
+            </div>
+            <div class="in hidden" id="repoBar">
+              <div class="field">
+                <label>ArcDevs.io repo</label>
+                <select id="arcdevsRepos"><option value="">Loading…</option></select>
+              </div>
+              <div class="field">
+                <label>Owner</label>
+                <input type="text" id="fRepoOwner" placeholder="ArcDevsio">
+              </div>
+              <div class="field">
+                <label>Repo</label>
+                <input type="text" id="fRepoName" placeholder="PartEditor">
+              </div>
+            </div>
+            <button id="fetchReleasesBtn">Fetch releases</button>
+          </div>
+
+          <div class="release-list" id="releasesList"></div>
+        </div>
+      </section>
+
+      <section class="section hidden" id="sec-featured">
+        <div class="card">
+          <h2>Featured mods</h2>
+          <div class="hint">Top 5 ordered mods appear in the "Featured" section on Home.</div>
+          <div class="picker-row">
+            <div class="field">
+              <label>Add a mod</label>
+              <select id="modPicker"></select>
+            </div>
+            <button class="secondary" id="addModBtn">Add</button>
+          </div>
+          <div class="ordered-list" id="featuredModsList"></div>
+        </div>
+
+        <div class="card">
+          <h2>Featured modders</h2>
+          <div class="hint">Top 5 ordered modders appear in the horizontal "Featured Modders" row on Home.</div>
+          <div class="picker-row">
+            <div class="field">
+              <label>Add a modder</label>
+              <select id="modderPicker"></select>
+            </div>
+            <button class="secondary" id="addModderBtn">Add</button>
+          </div>
+          <div class="ordered-list" id="featuredModdersList"></div>
+        </div>
+      </section>
+
+      <section class="section hidden" id="sec-modders">
+        <div class="card">
+          <h2>Modder badges</h2>
+          <div class="hint">Pick a modder, toggle their Verified check (the blue social-style badge), and add custom badges with a name, color and icon. Everything shows next to their name across the app.</div>
+
           <div class="field">
-            <label>ArcDevs.io repo</label>
-            <select id="arcdevsRepos"><option value="">Loading…</option></select>
+            <label>Modder</label>
+            <select id="badgeModderPicker"></select>
+          </div>
+
+          <div class="badge-list" id="badgeList"></div>
+
+          <div class="badge-sep">New custom badge</div>
+
+          <div class="badge-add">
+            <input type="text" id="badgeName" placeholder="Badge name (e.g. Team)" maxlength="24">
+            <input type="color" id="badgeColor" value="#8E8E93" title="Badge color">
+            <button class="secondary" id="addBadgeBtn">Add badge</button>
+          </div>
+
+          <div class="badge-icons">
+            <div class="badge-icons-label">Icon</div>
+            <button type="button" class="badge-icon selected" data-icon="" title="No icon"><ion-icon name="close" size="18"></ion-icon></button>
+            <button type="button" class="badge-icon" data-icon="medal-outline" title="Medal"><ion-icon name="medal-outline"></ion-icon></button>
+            <button type="button" class="badge-icon" data-icon="trophy-outline" title="Trophy"><ion-icon name="trophy-outline"></ion-icon></button>
+            <button type="button" class="badge-icon" data-icon="rocket-outline" title="Rocket"><ion-icon name="rocket-outline"></ion-icon></button>
+            <button type="button" class="badge-icon" data-icon="flame-outline" title="Flame"><ion-icon name="flame-outline"></ion-icon></button>
+            <button type="button" class="badge-icon" data-icon="star-outline" title="Star"><ion-icon name="star-outline"></ion-icon></button>
+            <button type="button" class="badge-icon" data-icon="heart-outline" title="Heart"><ion-icon name="heart-outline"></ion-icon></button>
+            <button type="button" class="badge-icon" data-icon="shield-checkmark-outline" title="Verified shield"><ion-icon name="shield-checkmark-outline"></ion-icon></button>
+            <button type="button" class="badge-icon" data-icon="ribbon-outline" title="Ribbon"><ion-icon name="ribbon-outline"></ion-icon></button>
+            <button type="button" class="badge-icon" data-icon="sparkles-outline" title="Sparkles"><ion-icon name="sparkles-outline"></ion-icon></button>
+            <button type="button" class="badge-icon" data-icon="flash-outline" title="Bolt"><ion-icon name="flash-outline"></ion-icon></button>
+            <button type="button" class="badge-icon" data-icon="bulb-outline" title="Idea"><ion-icon name="bulb-outline"></ion-icon></button>
+            <button type="button" class="badge-icon" data-icon="color-palette-outline" title="Palette"><ion-icon name="color-palette-outline"></ion-icon></button>
+            <button type="button" class="badge-icon" data-icon="game-controller-outline" title="Gaming"><ion-icon name="game-controller-outline"></ion-icon></button>
+            <button type="button" class="badge-icon" data-icon="airplane-outline" title="Aircraft"><ion-icon name="airplane-outline"></ion-icon></button>
+            <button type="button" class="badge-icon" data-icon="build-outline" title="Tools"><ion-icon name="build-outline"></ion-icon></button>
+            <button type="button" class="badge-icon" data-icon="hammer-outline" title="Hammer"><ion-icon name="hammer-outline"></ion-icon></button>
+            <button type="button" class="badge-icon" data-icon="flag-outline" title="Flag"><ion-icon name="flag-outline"></ion-icon></button>
+            <button type="button" class="badge-icon" data-icon="checkmark-circle-outline" title="Check"><ion-icon name="checkmark-circle-outline"></ion-icon></button>
+          </div>
+        </div>
+      </section>
+
+      <section class="section hidden" id="sec-delete">
+        <div class="card">
+          <h2>Delete from catalog</h2>
+          <div class="hint">Removes content from the app entirely. Deleting a modder also deletes all of their mods — nothing shows in the app unless it's in the catalog.</div>
+
+          <div class="picker-row">
+            <div class="field">
+              <label>Delete a mod</label>
+              <select id="delModPicker"></select>
+            </div>
+            <button class="danger" id="delModBtn">Delete</button>
+          </div>
+
+          <div class="picker-row" style="margin-top:10px;">
+            <div class="field">
+              <label>Delete a modder</label>
+              <select id="delModderPicker"></select>
+            </div>
+            <button class="danger" id="delModderBtn">Delete</button>
+          </div>
+        </div>
+      </section>
+
+      <section class="section hidden" id="sec-settings">
+        <div class="card">
+          <h2>App update</h2>
+          <div class="hint">Bump <b>latestVersion</b> above the installed app version to show users a new build is available.</div>
+          <div class="row">
+            <div class="field">
+              <label>Latest version</label>
+              <input type="text" id="fLatestVersion" placeholder="1.1.0">
+            </div>
+            <div class="field">
+              <label>Minimum version</label>
+              <input type="text" id="fMinimumVersion" placeholder="1.0.0">
+            </div>
           </div>
           <div class="field">
-            <label>Owner</label>
-            <input type="text" id="fRepoOwner" placeholder="ArcDevsio">
+            <label>APK download URL</label>
+            <input type="url" id="fAndroidUrl" placeholder="https://apps.heychano.xyz/dockyard/builds/dockyard.apk">
           </div>
           <div class="field">
-            <label>Repo</label>
-            <input type="text" id="fRepoName" placeholder="PartEditor">
+            <label>Changelog</label>
+            <textarea id="fChangelog" placeholder="What changed in this build?"></textarea>
           </div>
         </div>
-        <button id="fetchReleasesBtn">Fetch releases</button>
+      </section>
+
+      <div class="card hidden" id="rawConfigCard">
+        <h2>Raw config.json</h2>
+        <div class="hint">Fine-grained control for featured picks and app updates.</div>
+        <textarea id="rawConfigTextarea" style="min-height:220px;font-family:monospace;font-size:12px;"></textarea>
       </div>
 
-      <div class="release-list" id="releasesList"></div>
-    </div>
-
-    <div class="card">
-      <h2>Delete from catalog</h2>
-      <div class="hint">Removes content from the app entirely. Deleting a modder also deletes all of their mods — nothing shows in the app unless it's in the catalog.</div>
-
-      <div class="picker-row">
-        <div class="field">
-          <label>Delete a mod</label>
-          <select id="delModPicker"></select>
-        </div>
-        <button class="danger" id="delModBtn">Delete</button>
+      <div class="card hidden" id="rawCatalogCard">
+        <h2>Raw catalog.json</h2>
+        <div class="hint">The full mod library. Must keep a top-level <code>mods</code> array.</div>
+        <textarea id="rawCatalogTextarea" style="min-height:220px;font-family:monospace;font-size:12px;"></textarea>
       </div>
+    </main>
 
-      <div class="picker-row" style="margin-top:10px;">
-        <div class="field">
-          <label>Delete a modder</label>
-          <select id="delModderPicker"></select>
-        </div>
-        <button class="danger" id="delModderBtn">Delete</button>
-      </div>
-    </div>
-
-    <div class="card">
-      <h2>Featured mods</h2>
-      <div class="hint">Top 5 ordered mods appear in the "Featured" section on Home.</div>
-      <div class="picker-row">
-        <div class="field">
-          <label>Add a mod</label>
-          <select id="modPicker"></select>
-        </div>
-        <button class="secondary" id="addModBtn">Add</button>
-      </div>
-      <div class="ordered-list" id="featuredModsList"></div>
-    </div>
-
-    <div class="card">
-      <h2>Featured modders</h2>
-      <div class="hint">Top 5 ordered modders appear in the horizontal "Featured Modders" row on Home.</div>
-      <div class="picker-row">
-        <div class="field">
-          <label>Add a modder</label>
-          <select id="modderPicker"></select>
-        </div>
-        <button class="secondary" id="addModderBtn">Add</button>
-      </div>
-      <div class="ordered-list" id="featuredModdersList"></div>
-    </div>
-
-    <div class="card">
-      <h2>Modder badges</h2>
-      <div class="hint">Pick a modder, toggle their Verified check (the blue social-style badge), and add custom badges with a name, color and icon. Everything shows next to their name across the app.</div>
-
-      <div class="field">
-        <label>Modder</label>
-        <select id="badgeModderPicker"></select>
-      </div>
-
-      <div class="badge-list" id="badgeList"></div>
-
-      <div class="badge-sep">New custom badge</div>
-
-      <div class="badge-add">
-        <input type="text" id="badgeName" placeholder="Badge name (e.g. Team)" maxlength="24">
-        <input type="color" id="badgeColor" value="#8E8E93" title="Badge color">
-        <button class="secondary" id="addBadgeBtn">Add badge</button>
-      </div>
-
-      <div class="badge-icons">
-        <div class="badge-icons-label">Icon</div>
-        <button type="button" class="badge-icon selected" data-icon="" title="No icon"><ion-icon name="close" size="18"></ion-icon></button>
-        <button type="button" class="badge-icon" data-icon="medal-outline" title="Medal"><ion-icon name="medal-outline"></ion-icon></button>
-        <button type="button" class="badge-icon" data-icon="trophy-outline" title="Trophy"><ion-icon name="trophy-outline"></ion-icon></button>
-        <button type="button" class="badge-icon" data-icon="rocket-outline" title="Rocket"><ion-icon name="rocket-outline"></ion-icon></button>
-        <button type="button" class="badge-icon" data-icon="flame-outline" title="Flame"><ion-icon name="flame-outline"></ion-icon></button>
-        <button type="button" class="badge-icon" data-icon="star-outline" title="Star"><ion-icon name="star-outline"></ion-icon></button>
-        <button type="button" class="badge-icon" data-icon="heart-outline" title="Heart"><ion-icon name="heart-outline"></ion-icon></button>
-        <button type="button" class="badge-icon" data-icon="shield-checkmark-outline" title="Verified shield"><ion-icon name="shield-checkmark-outline"></ion-icon></button>
-        <button type="button" class="badge-icon" data-icon="ribbon-outline" title="Ribbon"><ion-icon name="ribbon-outline"></ion-icon></button>
-        <button type="button" class="badge-icon" data-icon="sparkles-outline" title="Sparkles"><ion-icon name="sparkles-outline"></ion-icon></button>
-        <button type="button" class="badge-icon" data-icon="flash-outline" title="Bolt"><ion-icon name="flash-outline"></ion-icon></button>
-        <button type="button" class="badge-icon" data-icon="bulb-outline" title="Idea"><ion-icon name="bulb-outline"></ion-icon></button>
-        <button type="button" class="badge-icon" data-icon="color-palette-outline" title="Palette"><ion-icon name="color-palette-outline"></ion-icon></button>
-        <button type="button" class="badge-icon" data-icon="game-controller-outline" title="Gaming"><ion-icon name="game-controller-outline"></ion-icon></button>
-        <button type="button" class="badge-icon" data-icon="airplane-outline" title="Aircraft"><ion-icon name="airplane-outline"></ion-icon></button>
-        <button type="button" class="badge-icon" data-icon="build-outline" title="Tools"><ion-icon name="build-outline"></ion-icon></button>
-        <button type="button" class="badge-icon" data-icon="hammer-outline" title="Hammer"><ion-icon name="hammer-outline"></ion-icon></button>
-        <button type="button" class="badge-icon" data-icon="flag-outline" title="Flag"><ion-icon name="flag-outline"></ion-icon></button>
-        <button type="button" class="badge-icon" data-icon="checkmark-circle-outline" title="Check"><ion-icon name="checkmark-circle-outline"></ion-icon></button>
-      </div>
-    </div>
-
-    <div class="save-row">
+    <div class="savebar">
       <span id="saveStatus" class="muted"></span>
       <button class="secondary" id="rawConfigToggle">Edit raw config.json</button>
       <button class="secondary" id="rawCatalogToggle">Edit raw catalog.json</button>
       <button id="saveBtn">Save changes</button>
     </div>
-
-    <div class="card hidden" id="rawConfigCard">
-      <h2>Raw config.json</h2>
-      <div class="hint">Fine-grained control for featured picks and app updates.</div>
-      <textarea id="rawConfigTextarea" style="min-height:220px;font-family:monospace;font-size:12px;"></textarea>
-    </div>
-
-    <div class="card hidden" id="rawCatalogCard">
-      <h2>Raw catalog.json</h2>
-      <div class="hint">The full mod library. Must keep a top-level <code>mods</code> array.</div>
-      <textarea id="rawCatalogTextarea" style="min-height:220px;font-family:monospace;font-size:12px;"></textarea>
-    </div>
   </div>
-</main>
+</div>
 
 <div class="modal-overlay hidden" id="addModal">
   <div class="modal">
@@ -798,7 +1013,11 @@
   var GH_BRANCH = "main";
   var GH_PATH = "dockyard"; // files live in this subfolder of the repo
   var STORE_REPO = { owner: "ArcDevsio", name: "Dockyard" };
+  var TOKEN_KEY = "dockyard_admin_token";
   var token = null;
+  var connected = false;
+  var lastCatalogSha = null;
+  var lastConfigSha = null;
   var catalog = { mods: [] };
   var state = {
     featuredMods: [],
@@ -833,9 +1052,11 @@
   }
 
   function setStatus(label, online) {
-    var el = $("connStatus");
-    el.textContent = label;
-    el.className = "status " + (online ? "online" : "offline");
+    connected = online;
+    $("connStatus").textContent = label;
+    $("connStatus").className = "status " + (online ? "online" : "offline");
+    $("sideStatus").textContent = (online ? "● " : "") + label;
+    $("sideStatus").className = "conn " + (online ? "online" : "offline");
   }
 
   function fmtSize(bytes) {
@@ -928,10 +1149,13 @@
         branch: GH_BRANCH
       };
       try {
-        return await apiFetch(ghApiPath(file), {
+        var result = await apiFetch(ghApiPath(file), {
           method: "PUT",
           body: JSON.stringify(payload)
         });
+        if (file === "catalog.json") lastCatalogSha = result.sha;
+        else lastConfigSha = result.sha;
+        return result;
       } catch (e) {
         // Concurrent edit (stale sha) → refetch and retry once.
         if (attempt === 0) continue;
@@ -940,32 +1164,53 @@
     }
   }
 
+  function showLoggedIn() {
+    $("loginCard").classList.add("hidden");
+    $("app").classList.remove("hidden");
+    showSection(state.activeSection || "mods");
+  }
+
+  function showLoggedOut() {
+    $("app").classList.add("hidden");
+    $("loginCard").classList.remove("hidden");
+  }
+
+  async function applyRemote() {
+    var [catalogData, configData] = await Promise.all([
+      rawFetch("../catalog.json"),
+      rawFetch("../config.json")
+    ]);
+    var [configMeta, catalogMeta] = await Promise.all([
+      apiFetch(ghApiPath("config.json")),
+      apiFetch(ghApiPath("catalog.json"))
+    ]);
+    lastConfigSha = configMeta.sha;
+    lastCatalogSha = catalogMeta.sha;
+
+    catalog = Array.isArray(catalogData.mods) ? catalogData : { mods: [] };
+    state.featuredMods = Array.isArray(configData.featuredMods) ? configData.featuredMods : [];
+    state.featuredModders = Array.isArray(configData.featuredModders) ? configData.featuredModders : [];
+    state.authorBadges = (configData.authorBadges && typeof configData.authorBadges === "object" && !Array.isArray(configData.authorBadges))
+      ? configData.authorBadges : {};
+    // Migrate legacy array form (authorId -> badges[]) to the new shape.
+    Object.keys(state.authorBadges).forEach(function (id) {
+      var e = state.authorBadges[id];
+      if (Array.isArray(e)) state.authorBadges[id] = { badges: e.filter(function (b) { return b && typeof b === "object"; }) };
+    });
+    state.app = Object.assign({ latestVersion: "", minimumVersion: "", androidDownloadUrl: "", changelog: "" }, configData.app || {});
+    render();
+  }
+
   $("connectBtn").addEventListener("click", async function () {
     token = $("tokenInput").value.trim();
     $("loginError").textContent = "";
     $("connectBtn").disabled = true;
     try {
-      var [catalogData, configData] = await Promise.all([
-        rawFetch("../catalog.json"),
-        rawFetch("../config.json")
-      ]);
-      catalog = Array.isArray(catalogData.mods) ? catalogData : { mods: [] };
-      state.featuredMods = Array.isArray(configData.featuredMods) ? configData.featuredMods : [];
-      state.featuredModders = Array.isArray(configData.featuredModders) ? configData.featuredModders : [];
-      state.authorBadges = (configData.authorBadges && typeof configData.authorBadges === "object" && !Array.isArray(configData.authorBadges))
-        ? configData.authorBadges : {};
-      // Migrate legacy array form (authorId -> badges[]) to the new shape.
-      Object.keys(state.authorBadges).forEach(function (id) {
-        var e = state.authorBadges[id];
-        if (Array.isArray(e)) state.authorBadges[id] = { badges: e.filter(function (b) { return b && typeof b === "object"; }) };
-      });
-      state.app = Object.assign({ latestVersion: "", minimumVersion: "", androidDownloadUrl: "", changelog: "" }, configData.app || {});
-      await apiFetch(ghApiPath("config.json"));
-      render();
-      $("loginCard").classList.add("hidden");
-      $("workspace").classList.remove("hidden");
+      await applyRemote();
+      localStorage.setItem(TOKEN_KEY, token);
+      showLoggedIn();
       setStatus("Online", true);
-      toast("Connected");
+      toast("Connected — live updates on");
       loadArcDevsRepos();
     } catch (e) {
       token = null;
@@ -976,6 +1221,77 @@
     }
   });
 
+  // Restore a saved session on load and keep everything in sync.
+  (async function boot() {
+    var saved = localStorage.getItem(TOKEN_KEY);
+    if (!saved) return;
+    token = saved;
+    try {
+      await applyRemote();
+      showLoggedIn();
+      setStatus("Online", true);
+      loadArcDevsRepos();
+    } catch (e) {
+      localStorage.removeItem(TOKEN_KEY);
+      token = null;
+      $("loginError").textContent = "Saved session expired: " + e.message + " — sign in again.";
+    }
+  })();
+
+  // Auto-reload: poll for remote changes and refresh without losing your session.
+  setInterval(async function pollRemote() {
+    if (!connected) return;
+    try {
+      var [cMeta, caMeta] = await Promise.all([
+        apiFetch(ghApiPath("config.json")),
+        apiFetch(ghApiPath("catalog.json"))
+      ]);
+      if (cMeta.sha !== lastConfigSha || caMeta.sha !== lastCatalogSha) {
+        await applyRemote();
+        toast("Remote content changed — reloaded.");
+      }
+    } catch (e) { /* transient network error — ignore */ }
+  }, 30000);
+
+  $("logoutBtn").addEventListener("click", function () {
+    localStorage.removeItem(TOKEN_KEY);
+    token = null;
+    catalog = { mods: [] };
+    state.releases = [];
+    state.selectedRelease = null;
+    setStatus("Disconnected", false);
+    showLoggedOut();
+    toast("Logged out.");
+  });
+
+  $("refreshBtn").addEventListener("click", async function () {
+    var btn = $("refreshBtn");
+    btn.disabled = true;
+    try {
+      await applyRemote();
+      loadArcDevsRepos();
+      toast("Fetched the latest remote content.");
+    } catch (e) {
+      toast("Fetch failed: " + e.message, true);
+    } finally {
+      btn.disabled = false;
+    }
+  });
+
+  function showSection(name) {
+    state.activeSection = name;
+    document.querySelectorAll(".section").forEach(function (s) {
+      s.classList.toggle("hidden", s.id !== "sec-" + name);
+    });
+    document.querySelectorAll("[data-sec]").forEach(function (b) {
+      b.classList.toggle("active", b.getAttribute("data-sec") === name);
+    });
+  }
+
+  document.querySelectorAll("[data-sec]").forEach(function (b) {
+    b.addEventListener("click", function () { showSection(b.getAttribute("data-sec")); });
+  });
+
   function render() {
     $("fLatestVersion").value = state.app.latestVersion;
     $("fMinimumVersion").value = state.app.minimumVersion;
@@ -984,6 +1300,7 @@
 
     renderCatalogManagers();
     renderBadgeModders();
+    renderCatalogList();
 
     renderPicker("modPicker", catalog.mods.map(function (m) {
       return { id: m.id, label: m.name + "  (by " + m.author.name + ")" };
@@ -1002,6 +1319,63 @@
     if (!$("rawCatalogCard").classList.contains("hidden")) {
       $("rawCatalogTextarea").value = JSON.stringify(catalog, null, 2);
     }
+  }
+
+  function renderCatalogList() {
+    var node = $("catalogList");
+    node.innerHTML = "";
+    var modders = modderList();
+    var badged = 0;
+    Object.keys(state.authorBadges).forEach(function (id) {
+      var b = state.authorBadges[id];
+      if (b && (b.verified || (b.badges && b.badges.length))) badged++;
+    });
+    $("statMods").textContent = catalog.mods.length;
+    $("statModders").textContent = modders.length;
+    $("statFeatured").textContent = state.featuredMods.length;
+    $("statBadged").textContent = badged;
+
+    if (!catalog.mods.length) {
+      var empty = document.createElement("div");
+      empty.className = "empty-list";
+      empty.textContent = "The catalog is empty — add mods from the card below.";
+      node.appendChild(empty);
+      return;
+    }
+
+    catalog.mods.forEach(function (m) {
+      var el = document.createElement("div");
+      el.className = "ordered-item";
+
+      var av = document.createElement("div");
+      av.className = "avatar";
+      av.textContent = (m.author.name || "?").slice(0, 2).toUpperCase();
+
+      var meta = document.createElement("div");
+      meta.className = "meta";
+      var nameEl = document.createElement("div");
+      nameEl.className = "name";
+      nameEl.textContent = m.name + (m.pinned ? "  ⭐" : "");
+      var idEl = document.createElement("div");
+      idEl.className = "id";
+      idEl.textContent = "by " + m.author.name + (m.latestRelease ? "  ·  v" + m.latestRelease.version : "");
+      meta.appendChild(nameEl);
+      meta.appendChild(idEl);
+
+      var tools = document.createElement("div");
+      tools.className = "tools";
+      tools.appendChild(mkTool("✕", true, function () {
+        if (!window.confirm('Delete "' + m.name + '" from the catalog?\n\nIt also stops being featured.')) return;
+        catalog.mods = catalog.mods.filter(function (x) { return x.id !== m.id; });
+        state.featuredMods = state.featuredMods.filter(function (f) { return f !== m.id; });
+        persistCatalogAfterDelete();
+      }, true));
+
+      el.appendChild(av);
+      el.appendChild(meta);
+      el.appendChild(tools);
+      node.appendChild(el);
+    });
   }
 
   function modderList() {
