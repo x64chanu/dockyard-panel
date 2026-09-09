@@ -237,6 +237,27 @@
   .pick-repo .in .field { margin-bottom: 0; flex: 1; }
   .pick-repo button { flex: 0 0 auto; margin-top: 0; }
 
+  #storeBar { flex: 2 1 auto; align-self: center; }
+
+  .source-switch { display: inline-flex; gap: 6px; margin-bottom: 14px; }
+
+  .source-switch .seg {
+    background: var(--surface-light);
+    color: var(--text-secondary);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    padding: 7px 14px;
+    font-size: 12px;
+    font-weight: 800;
+  }
+
+  .source-switch .seg.active {
+    background: var(--primary);
+    color: #fff;
+    border-color: var(--primary);
+    opacity: 1;
+  }
+
   .release-list { margin-top: 14px; }
 
   .release-item {
@@ -450,10 +471,18 @@
 
     <div class="card">
       <h2>Add a mod</h2>
-      <div class="hint">Pick a GitHub repository and one release (one release = one mod). The app downloads the release's <b>first asset</b> as-is — no archive extraction — so release the raw <code>.dll</code> (parts) or <code>.pack</code> (cosmetics).</div>
+      <div class="hint">Mods only reach the app once you add them here — nothing on GitHub releases loads automatically. Two sources: the <b>Dockyard store</b> (ArcDevs re-hosts the author's mod as one release on ArcDevsio/Dockyard; the app is pinned to exactly the release you pick) or a <b>mod owner's repo</b> (the app follows their newest release live).</div>
+
+      <div class="source-switch">
+        <button class="seg active" id="srcStoreBtn" type="button">Dockyard store</button>
+        <button class="seg" id="srcRepoBtn" type="button">Mod owner's repo</button>
+      </div>
 
       <div class="pick-repo">
-        <div class="in">
+        <div id="storeBar" class="muted">
+          <div>Fetching from <b>ArcDevsio/Dockyard</b> — one release = one re-hosted mod. Pick a release below, then review before adding.</div>
+        </div>
+        <div class="in hidden" id="repoBar">
           <div class="field">
             <label>ArcDevs.io repo</label>
             <select id="arcdevsRepos"><option value="">Loading…</option></select>
@@ -575,6 +604,7 @@
   var GH_REPO = "x64chanu/dockyard-panel";
   var GH_BRANCH = "main";
   var GH_PATH = "dockyard"; // files live in this subfolder of the repo
+  var STORE_REPO = { owner: "ArcDevsio", name: "Dockyard" };
   var token = null;
   var catalog = { mods: [] };
   var state = {
@@ -584,7 +614,8 @@
     repo: null,      // { owner, name, url, description, arcdevs }
     releases: [],    // GitHub release objects
     selectedRelease: null,
-    arcdevsOwners: ["arcdevsio", "arcdevs"]
+    arcdevsOwners: ["arcdevsio", "arcdevs"],
+    source: "store" // "store" = ArcDevsio/Dockyard (pinned) | "repo" = any owner/repo (live)
   };
 
   var CATEGORIES = [
@@ -632,6 +663,11 @@
 
   function isArcDevsOwner(owner) {
     return state.arcdevsOwners.indexOf(String(owner).toLowerCase()) !== -1;
+  }
+
+  function isStoreRepo(owner, name) {
+    return String(owner).toLowerCase() === STORE_REPO.owner.toLowerCase() &&
+      String(name).toLowerCase() === STORE_REPO.name.toLowerCase();
   }
 
   async function rawFetch(path, init) {
@@ -898,11 +934,32 @@
     fetchReleases();
   });
 
+  function setSource(mode) {
+    state.source = mode;
+    $("srcStoreBtn").classList.toggle("active", mode === "store");
+    $("srcRepoBtn").classList.toggle("active", mode === "repo");
+    $("storeBar").classList.toggle("hidden", mode !== "store");
+    $("repoBar").classList.toggle("hidden", mode !== "repo");
+    state.releases = [];
+    state.selectedRelease = null;
+    $("releasesList").innerHTML = "";
+  }
+
+  $("srcStoreBtn").addEventListener("click", function () { setSource("store"); });
+  $("srcRepoBtn").addEventListener("click", function () { setSource("repo"); });
+  setSource("store");
+
   $("fetchReleasesBtn").addEventListener("click", fetchReleases);
 
   async function fetchReleases() {
-    var owner = $("fRepoOwner").value.trim();
-    var name = $("fRepoName").value.trim();
+    var owner, name;
+    if (state.source === "store") {
+      owner = STORE_REPO.owner;
+      name = STORE_REPO.name;
+    } else {
+      owner = $("fRepoOwner").value.trim();
+      name = $("fRepoName").value.trim();
+    }
     if (!owner || !name) {
       toast("Enter a repository owner and name.", true);
       return;
@@ -1049,9 +1106,12 @@
       ' <span class="badge' + (state.repo.arcdevs ? " arcdevs" : "") + '">' +
       (state.repo.arcdevs ? "ArcDevs.io — original author is manual" : "GitHub author auto-fetched") +
       '</span></div>' +
-      '<div class="rel">' + (rel.name || rel.tag_name) + ' <span class="badge">' + rel.tag_name + "</span></div>" +
+      '<div class="rel">' + (rel.name || rel.tag_name) + ' <span class="badge">' + rel.tag_name + "</span>" +
+      (isStoreRepo(state.repo.owner, state.repo.name) ? ' <span class="badge arcdevs">pinned</span>' : "") + "</div>" +
       '<div class="asst">Downloads the FIRST asset only: <b>' + rel.assets[0].name + "</b> (" + fmtSize(rel.assets[0].size) + ") into Custom_Assets/" +
-      (rel.assets[0].name.toLowerCase().endsWith(".pack") ? "Texture Packs" : "Parts") + ".</div>";
+      (rel.assets[0].name.toLowerCase().endsWith(".pack") ? "Texture Packs" : "Parts") + "." +
+      (isStoreRepo(state.repo.owner, state.repo.name) ? " The app stays on this exact release until you renew it here." : " Newer author releases are followed automatically.") +
+      "</div>";
 
     var author, ownerLogin = state.repo.owner;
     if (!state.repo.arcdevs) {
@@ -1139,6 +1199,7 @@
         name: state.repo.name,
         url: state.repo.url
       },
+      pinned: isStoreRepo(state.repo.owner, state.repo.name) ? true : undefined,
       latestRelease: {
         id: rel.id,
         version: rel.tag_name.replace(/^v/i, "") || "1.0",
