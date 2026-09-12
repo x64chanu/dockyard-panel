@@ -82,13 +82,18 @@
   .card {
     background: var(--surface);
     border: 1px solid var(--border);
-    border-radius: 16px;
+    border-radius: 20px;
     padding: 22px;
     margin-bottom: 20px;
-    transition: border-color .2s, box-shadow .2s;
+    box-shadow: 0 10px 34px -20px rgba(0,0,0,.7);
+    transition: border-color .2s, box-shadow .2s, transform .2s;
   }
 
-  .card:hover { border-color: var(--border-light); }
+  .card:hover {
+    border-color: var(--border-light);
+    transform: translateY(-1px);
+    box-shadow: 0 16px 44px -20px rgba(0,0,0,.8);
+  }
 
   .card h2 {
     font-size: 14px;
@@ -119,7 +124,7 @@
     background: var(--surface-light);
     border: 1px solid var(--border);
     color: var(--text);
-    border-radius: 10px;
+    border-radius: 12px;
     padding: 10px 12px;
     font-size: 14px;
     font-family: inherit;
@@ -139,7 +144,7 @@
   button {
     cursor: pointer;
     border: none;
-    border-radius: 10px;
+    border-radius: 12px;
     padding: 10px 18px;
     font-size: 14px;
     font-weight: 800;
@@ -211,7 +216,7 @@
     gap: 10px;
     background: var(--surface-light);
     border: 1px solid var(--border);
-    border-radius: 10px;
+    border-radius: 14px;
     padding: 8px 12px;
     margin-bottom: 8px;
     transition: border-color .18s, transform .18s, background .18s;
@@ -249,7 +254,7 @@
     width: 30px;
     height: 30px;
     padding: 0;
-    border-radius: 8px;
+    border-radius: 10px;
     font-size: 13px;
     background: var(--surface);
     border: 1px solid var(--border);
@@ -262,7 +267,7 @@
     text-align: center;
     padding: 16px;
     border: 1px dashed var(--border);
-    border-radius: 10px;
+    border-radius: 12px;
   }
 
   /* ---- Modder badges ---- */
@@ -275,7 +280,7 @@
     gap: 10px;
     background: var(--surface-light);
     border: 1px solid var(--border);
-    border-radius: 10px;
+    border-radius: 14px;
     padding: 8px 12px;
     margin-bottom: 8px;
   }
@@ -309,7 +314,7 @@
     height: 40px;
     padding: 2px;
     border: 1px solid var(--border);
-    border-radius: 8px;
+    border-radius: 10px;
     background: var(--surface-light);
     cursor: pointer;
   }
@@ -350,7 +355,7 @@
     color: var(--text-secondary);
     background: var(--surface-light);
     border: 1px solid var(--border);
-    border-radius: 8px;
+    border-radius: 10px;
     cursor: pointer;
     transition: transform .12s ease;
   }
@@ -434,7 +439,7 @@
     gap: 12px;
     background: var(--surface-light);
     border: 1px solid var(--border);
-    border-radius: 10px;
+    border-radius: 14px;
     padding: 12px 14px;
     margin-bottom: 8px;
     cursor: pointer;
@@ -499,7 +504,7 @@
     overflow: auto;
     background: var(--surface);
     border: 1px solid var(--border-light);
-    border-radius: 18px;
+    border-radius: 22px;
     padding: 22px;
     animation: popIn .28s cubic-bezier(.22,1,.36,1) both;
   }
@@ -523,7 +528,7 @@
   .summary {
     background: var(--surface-light);
     border: 1px solid var(--border);
-    border-radius: 10px;
+    border-radius: 14px;
     padding: 12px 14px;
     margin-bottom: 16px;
   }
@@ -544,7 +549,7 @@
     gap: 8px;
     background: var(--surface-light);
     border: 1px solid var(--border);
-    border-radius: 8px;
+    border-radius: 10px;
     padding: 9px 11px;
     font-size: 12px;
     font-weight: 700;
@@ -586,7 +591,7 @@
     font-size: 14px;
     font-weight: 800;
     padding: 12px 20px;
-    border-radius: 12px;
+    border-radius: 16px;
     opacity: 0;
     transition: all .3s cubic-bezier(.22,1,.36,1);
     pointer-events: none;
@@ -611,16 +616,9 @@
   }
 
   .login-screen .card { max-width: 440px; width: 100%; animation: fadeUp .4s cubic-bezier(.22,1,.36,1) both; }
-  .login-screen .card h2 { font-size: 18px; text-transform: none; letter-spacing: 0; color: var(--white); }
-  .login-screen .card h2::after {
-    content: "";
-    display: block;
-    width: 36px;
-    height: 3px;
-    border-radius: 999px;
-    background: var(--primary);
-    margin-top: 6px;
-  }
+  .login-screen .login-brand { display: flex; align-items: center; gap: 10px; }
+  .login-screen .login-brand .brand-mark { width: 14px; height: 14px; border-radius: 5px; background: var(--primary); }
+  .login-screen .card h2 { font-size: 18px; text-transform: none; letter-spacing: 0; color: var(--white); margin: 0; }
   .login-screen .card .hint { margin-bottom: 18px; }
   .login-screen .login { flex-direction: column; gap: 10px; }
   .login-screen .login input { padding: 12px 14px; }
@@ -642,9 +640,10 @@
   }
 
   .sidebar .brand { padding: 6px 10px 16px; }
-  .sidebar .brand .logo { font-size: 17px; font-weight: 800; letter-spacing: -.3px; color: var(--white); }
-  .sidebar .brand .logo span { color: var(--primary); }
-  .sidebar .brand .tag { color: var(--text-muted); font-size: 11px; font-weight: 700; margin-top: 2px; }
+  .sidebar .brand .logo { font-size: 17px; font-weight: 800; letter-spacing: -.3px; color: var(--white); display: flex; align-items: center; gap: 8px; }
+  .sidebar .brand .logo span.accent { color: var(--primary); }
+  .sidebar .brand .logo .brand-mark { width: 11px; height: 11px; border-radius: 4px; background: var(--primary); flex-shrink: 0; }
+  .sidebar .brand .tag { color: var(--text-muted); font-size: 11px; font-weight: 700; margin-top: 2px; padding-left: 19px; }
 
   .sidebar nav { display: flex; flex-direction: column; gap: 2px; }
 
@@ -657,7 +656,7 @@
     background: transparent;
     color: var(--text-secondary);
     border: none;
-    border-radius: 10px;
+    border-radius: 12px;
     text-align: left;
     font-size: 13px;
     font-weight: 800;
@@ -716,8 +715,9 @@
     border-bottom: 1px solid var(--border);
   }
 
-  .topbar h1 { font-size: 16px; font-weight: 800; color: var(--white); }
-  .topbar h1 span { color: var(--primary); }
+  .topbar h1 { font-size: 16px; font-weight: 800; color: var(--white); display: flex; align-items: center; gap: 8px; }
+  .topbar h1 span.accent { color: var(--primary); }
+  .topbar h1 .brand-mark { width: 10px; height: 10px; border-radius: 3px; background: var(--primary); }
   .topbar .right { display: flex; align-items: center; gap: 10px; }
   .topbar .right button { display: inline-flex; align-items: center; gap: 6px; padding: 8px 14px; font-size: 12px; }
 
@@ -743,7 +743,7 @@
   .stat {
     background: var(--surface-light);
     border: 1px solid var(--border);
-    border-radius: 12px;
+    border-radius: 16px;
     padding: 12px 14px;
     transition: border-color .18s, transform .18s, background .18s;
     animation: fadeUp .32s cubic-bezier(.22,1,.36,1) both;
@@ -775,7 +775,7 @@
     padding: 12px 16px;
     background: var(--surface);
     border: 1px solid var(--border-light);
-    border-radius: 14px;
+    border-radius: 18px;
     box-shadow: 0 -6px 24px rgba(0,0,0,.35);
     display: flex;
     align-items: center;
@@ -805,7 +805,10 @@
 <body>
 <div class="login-screen" id="loginCard">
   <div class="card">
-    <h2>Dockyard Admin</h2>
+    <div class="login-brand">
+      <span class="brand-mark"></span>
+      <h2>Dockyard Admin</h2>
+    </div>
     <div class="hint">Authorized access required. Your token is kept in this browser — reloading keeps you signed in.</div>
     <div class="login">
       <input type="password" id="tokenInput" placeholder="Admin token" autocomplete="off">
@@ -818,7 +821,7 @@
 <div class="app hidden" id="app">
   <aside class="sidebar">
     <div class="brand">
-      <div class="logo">Dockyard <span>Admin</span></div>
+      <div class="logo"><span class="brand-mark"></span>Dockyard <span class="accent">Admin</span></div>
       <div class="tag">content dashboard</div>
     </div>
     <nav>
@@ -836,7 +839,7 @@
 
   <div class="main-wrap">
     <div class="topbar">
-      <h1>Dockyard <span>Admin</span></h1>
+      <h1><span class="brand-mark"></span>Dockyard <span class="accent">Admin</span></h1>
       <div class="right">
         <div id="connStatus" class="status">Disconnected</div>
         <button class="secondary" id="refreshBtn"><ion-icon name="refresh-outline"></ion-icon><span>Fetch</span></button>
@@ -2086,6 +2089,7 @@
   });
 
   $("saveModalBtn").addEventListener("click", async function () {
+    if (state.saving) return;
     var rel = state.selectedRelease;
     if (!rel || !state.repo) return;
 
@@ -2154,15 +2158,19 @@
 
     $("saveModalBtn").disabled = true;
     $("saveModalBtn").textContent = "Saving…";
+    state.saving = true;
     try {
       await writeGitFile("catalog.json", catalog);
-      toast(existingIdx >= 0 ? "Mod updated in the catalog." : modName + " added to the catalog.");
-      toast("Saved to GitHub — Pages updates in ~1 min.");
+      state.selectedRelease = null;
+      state.releases = [];
+      $("releasesList").innerHTML = "";
       $("addModal").classList.add("hidden");
       render();
+      toast(modName + " added to the catalog — saved to GitHub, Pages updates in ~1 min.");
     } catch (e) {
-      toast("Save failed: " + e.message, true);
+      toast("Save failed: " + friendlyApiError(e), true);
     } finally {
+      state.saving = false;
       $("saveModalBtn").disabled = false;
       $("saveModalBtn").textContent = "Add to catalog";
     }
@@ -2203,7 +2211,11 @@
   $("saveBtn").addEventListener("click", async function () {
     var statusEl = $("saveStatus");
 
+    if (state.saving) return;
     if (statusEl.textContent === "Saving…") return;
+
+    state.saving = true;
+    statusEl.textContent = "Saving…";
 
     var configJson = collectConfig();
     var catalogDraft = catalog;
@@ -2247,6 +2259,8 @@
       statusEl.textContent = "";
       toast("Save failed: " + friendlyApiError(e), true);
       return;
+    } finally {
+      state.saving = false;
     }
     statusEl.textContent = "";
   });
