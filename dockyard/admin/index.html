@@ -9,15 +9,18 @@
 <style>
   :root {
     --bg: #0D0D0D;
-    --surface: #121113;
-    --surface-light: #17161A;
-    --border: #26222A;
+    --surface: #151417;
+    --surface-light: #1C1A1D;
+    --border: #28252A;
     --border-light: #332F35;
     --text: #E9E2FF;
     --text-secondary: #9A95A1;
     --text-muted: #66626B;
-    --primary: #E9E2FF;
-    --primary-dark: #C9C2EA;
+    --primary: #FF0029;
+    --primary-dark: #CC0021;
+    --primary-muted: rgba(255, 0, 41, 0.14);
+    --primary-glow: rgba(255, 0, 41, 0.4);
+    --white: #FFFFFF;
     --success: #3DDC84;
     --warning: #F5A623;
     --danger: #FF4D5E;
@@ -46,6 +49,7 @@
     font-size: 18px;
     font-weight: 800;
     letter-spacing: -0.2px;
+    color: var(--white);
   }
 
   header h1 span { color: var(--primary); }
@@ -124,7 +128,7 @@
   input:focus, textarea:focus, select:focus {
     outline: none;
     border-color: var(--primary);
-    box-shadow: 0 0 0 3px rgba(233,226,255,.12);
+    box-shadow: 0 0 0 3px var(--primary-muted);
   }
 
   textarea { resize: vertical; min-height: 72px; }
@@ -141,14 +145,14 @@
     font-weight: 800;
     font-family: inherit;
     background: var(--primary);
-    color: #0D0D0D;
+    color: var(--white);
     transition: transform .18s cubic-bezier(.22,1,.36,1), background .18s, box-shadow .18s, opacity .18s;
   }
 
   button:hover {
     background: var(--primary-dark);
     transform: translateY(-1px);
-    box-shadow: 0 10px 30px -10px rgba(233,226,255,.35);
+    box-shadow: 0 10px 30px -10px var(--primary-glow);
   }
 
   button:active { transform: translateY(0) scale(.97); }
@@ -163,7 +167,8 @@
   button.secondary:hover {
     background: var(--surface-light);
     border-color: var(--border-light);
-    box-shadow: 0 8px 24px -12px rgba(233,226,255,.2);
+    color: var(--white);
+    box-shadow: none;
   }
 
   button.ghost {
@@ -181,15 +186,15 @@
 
   button.danger {
     background: transparent;
-    color: var(--primary);
-    border: 1px solid rgba(233,226,255,.35);
+    color: var(--danger);
+    border: 1px solid rgba(255,77,94,.4);
   }
 
   button.danger:hover {
-    color: #0D0D0D;
-    background: var(--primary);
-    border-color: var(--primary);
-    box-shadow: 0 8px 24px -12px rgba(233,226,255,.35);
+    color: #fff;
+    background: var(--danger);
+    border-color: var(--danger);
+    box-shadow: 0 8px 24px -12px rgba(255,77,94,.35);
   }
 
   .login { display: flex; gap: 10px; }
@@ -357,7 +362,7 @@
   .badge-icon.selected {
     border-color: var(--primary);
     color: var(--text);
-    box-shadow: 0 0 0 2px rgba(233, 226, 255, .25);
+    box-shadow: 0 0 0 2px var(--primary-muted);
   }
 
   .badge-verified-check {
@@ -415,9 +420,10 @@
 
   .source-switch .seg.active {
     background: var(--primary);
-    color: #0D0D0D;
+    color: #fff;
     border-color: var(--primary);
     opacity: 1;
+    box-shadow: 0 6px 18px -8px var(--primary-glow);
   }
 
   .release-list { margin-top: 14px; }
@@ -439,7 +445,7 @@
 
   .release-item.selected {
     border-color: var(--primary);
-    background: rgba(233,226,255,.06);
+    background: var(--primary-muted);
   }
 
   .release-item .tag { flex-shrink: 0; }
@@ -463,7 +469,7 @@
     flex-shrink: 0;
   }
 
-  .badge.arcdevs { border-color: rgba(233,226,255,.5); color: var(--primary); }
+  .badge.arcdevs { border-color: rgba(255,0,41,.5); color: var(--primary); }
 
   .row-hint { margin-top: 8px; }
 
@@ -576,7 +582,7 @@
     left: 50%;
     transform: translate(-50%, 80px);
     background: var(--primary);
-    color: #0D0D0D;
+    color: #fff;
     font-size: 14px;
     font-weight: 800;
     padding: 12px 20px;
@@ -585,7 +591,7 @@
     transition: all .3s cubic-bezier(.22,1,.36,1);
     pointer-events: none;
     z-index: 60;
-    box-shadow: 0 12px 40px -8px rgba(233,226,255,.35);
+    box-shadow: 0 12px 40px -8px var(--primary-glow);
   }
 
   .toast.show { transform: translate(-50%, 0); opacity: 1; }
@@ -605,7 +611,16 @@
   }
 
   .login-screen .card { max-width: 440px; width: 100%; animation: fadeUp .4s cubic-bezier(.22,1,.36,1) both; }
-  .login-screen .card h2 { font-size: 18px; text-transform: none; letter-spacing: 0; }
+  .login-screen .card h2 { font-size: 18px; text-transform: none; letter-spacing: 0; color: var(--white); }
+  .login-screen .card h2::after {
+    content: "";
+    display: block;
+    width: 36px;
+    height: 3px;
+    border-radius: 999px;
+    background: var(--primary);
+    margin-top: 6px;
+  }
   .login-screen .card .hint { margin-bottom: 18px; }
   .login-screen .login { flex-direction: column; gap: 10px; }
   .login-screen .login input { padding: 12px 14px; }
@@ -627,7 +642,7 @@
   }
 
   .sidebar .brand { padding: 6px 10px 16px; }
-  .sidebar .brand .logo { font-size: 17px; font-weight: 800; letter-spacing: -.3px; }
+  .sidebar .brand .logo { font-size: 17px; font-weight: 800; letter-spacing: -.3px; color: var(--white); }
   .sidebar .brand .logo span { color: var(--primary); }
   .sidebar .brand .tag { color: var(--text-muted); font-size: 11px; font-weight: 700; margin-top: 2px; }
 
@@ -650,7 +665,7 @@
   }
 
   .sidebar nav button.nav:hover { background: var(--surface-light); color: var(--text); opacity: 1; transform: translateY(-1px); }
-  .sidebar nav button.nav.active { background: var(--primary); color: #0D0D0D; box-shadow: 0 8px 24px -12px rgba(233,226,255,.4); }
+  .sidebar nav button.nav.active { background: var(--primary); color: #fff; box-shadow: 0 8px 24px -12px var(--primary-glow); }
   .sidebar nav button.nav ion-icon { font-size: 18px; flex-shrink: 0; }
 
   .sidebar .side-foot {
@@ -701,7 +716,7 @@
     border-bottom: 1px solid var(--border);
   }
 
-  .topbar h1 { font-size: 16px; font-weight: 800; }
+  .topbar h1 { font-size: 16px; font-weight: 800; color: var(--white); }
   .topbar h1 span { color: var(--primary); }
   .topbar .right { display: flex; align-items: center; gap: 10px; }
   .topbar .right button { display: inline-flex; align-items: center; gap: 6px; padding: 8px 14px; font-size: 12px; }
@@ -740,7 +755,7 @@
     background: var(--surface);
   }
 
-  .stat .num { font-size: 20px; font-weight: 800; }
+  .stat .num { font-size: 20px; font-weight: 800; color: var(--primary); }
   .stat .lbl {
     color: var(--text-muted);
     font-size: 10px;
@@ -832,7 +847,7 @@
       <section class="section" id="sec-mods">
         <div class="card">
           <h2>Catalog</h2>
-          <div class="hint">Everything that's live in the app right now. This page talks to GitHub directly — hit <b>Fetch</b> in the top bar to pull the latest copy, or it auto-refreshes every 30 seconds.</div>
+          <div class="hint">Everything that's live in the app right now. This page talks to GitHub directly — it loads once, and you hit <b>Fetch</b> in the top bar to pull the latest copy.</div>
 
           <div class="stat-row">
             <div class="stat"><div class="num" id="statMods">0</div><div class="lbl">Mods</div></div>
@@ -1333,22 +1348,8 @@
     }
   })();
 
-  // Auto-reload: poll for remote changes and refresh without losing your session.
-  // Skips while the raw editors are open (in case of unsaved edits) or a write is in flight.
-  setInterval(async function pollRemote() {
-    if (!connected || state.saving) return;
-    if (!$("rawConfigCard").classList.contains("hidden") || !$("rawCatalogCard").classList.contains("hidden")) return;
-    try {
-      var [cMeta, caMeta] = await Promise.all([
-        apiFetch(ghApiPath("config.json")),
-        apiFetch(ghApiPath("catalog.json"))
-      ]);
-      if (cMeta.sha !== lastConfigSha || caMeta.sha !== lastCatalogSha) {
-        await applyRemote();
-        toast("Remote content changed — reloaded.");
-      }
-    } catch (e) { /* transient network error — ignore */ }
-  }, 30000);
+  // No auto-refresh — content is loaded once on connect and only refreshed
+  // when you hit Fetch in the top bar (or reload the page).
 
   $("logoutBtn").addEventListener("click", function () {
     localStorage.removeItem(TOKEN_KEY);
