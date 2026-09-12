@@ -9,15 +9,15 @@
 <style>
   :root {
     --bg: #0D0D0D;
-    --surface: #151417;
-    --surface-light: #1C1A1D;
-    --border: #28252A;
+    --surface: #121113;
+    --surface-light: #17161A;
+    --border: #26222A;
     --border-light: #332F35;
     --text: #E9E2FF;
     --text-secondary: #9A95A1;
     --text-muted: #66626B;
-    --primary: #FF0029;
-    --primary-dark: #CC0021;
+    --primary: #E9E2FF;
+    --primary-dark: #C9C2EA;
     --success: #3DDC84;
     --warning: #F5A623;
     --danger: #FF4D5E;
@@ -81,7 +81,10 @@
     border-radius: 16px;
     padding: 22px;
     margin-bottom: 20px;
+    transition: border-color .2s, box-shadow .2s;
   }
+
+  .card:hover { border-color: var(--border-light); }
 
   .card h2 {
     font-size: 14px;
@@ -121,6 +124,7 @@
   input:focus, textarea:focus, select:focus {
     outline: none;
     border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(233,226,255,.12);
   }
 
   textarea { resize: vertical; min-height: 72px; }
@@ -137,17 +141,29 @@
     font-weight: 800;
     font-family: inherit;
     background: var(--primary);
-    color: #fff;
-    transition: opacity .15s;
+    color: #0D0D0D;
+    transition: transform .18s cubic-bezier(.22,1,.36,1), background .18s, box-shadow .18s, opacity .18s;
   }
 
-  button:hover { opacity: .85; }
-  button:disabled { opacity: .45; cursor: not-allowed; }
+  button:hover {
+    background: var(--primary-dark);
+    transform: translateY(-1px);
+    box-shadow: 0 10px 30px -10px rgba(233,226,255,.35);
+  }
+
+  button:active { transform: translateY(0) scale(.97); }
+  button:disabled { opacity: .45; cursor: not-allowed; transform: none; box-shadow: none; }
 
   button.secondary {
     background: var(--surface-light);
     color: var(--text);
     border: 1px solid var(--border);
+  }
+
+  button.secondary:hover {
+    background: var(--surface-light);
+    border-color: var(--border-light);
+    box-shadow: 0 8px 24px -12px rgba(233,226,255,.2);
   }
 
   button.ghost {
@@ -156,10 +172,24 @@
     border: 1px solid var(--border);
   }
 
+  button.ghost:hover {
+    color: var(--text);
+    border-color: var(--border-light);
+    background: var(--surface-light);
+    box-shadow: none;
+  }
+
   button.danger {
     background: transparent;
-    color: var(--danger);
-    border: 1px solid rgba(255,77,94,.4);
+    color: var(--primary);
+    border: 1px solid rgba(233,226,255,.35);
+  }
+
+  button.danger:hover {
+    color: #0D0D0D;
+    background: var(--primary);
+    border-color: var(--primary);
+    box-shadow: 0 8px 24px -12px rgba(233,226,255,.35);
   }
 
   .login { display: flex; gap: 10px; }
@@ -179,6 +209,12 @@
     border-radius: 10px;
     padding: 8px 12px;
     margin-bottom: 8px;
+    transition: border-color .18s, transform .18s, background .18s;
+  }
+
+  .ordered-item:hover {
+    border-color: var(--border-light);
+    transform: translateY(-1px);
   }
 
   .ordered-item .avatar {
@@ -321,7 +357,7 @@
   .badge-icon.selected {
     border-color: var(--primary);
     color: var(--text);
-    box-shadow: 0 0 0 2px rgba(255, 45, 85, .25);
+    box-shadow: 0 0 0 2px rgba(233, 226, 255, .25);
   }
 
   .badge-verified-check {
@@ -372,11 +408,14 @@
     padding: 7px 14px;
     font-size: 12px;
     font-weight: 800;
+    transition: background .18s, color .18s, border-color .18s, transform .18s;
   }
+
+  .source-switch .seg:hover { color: var(--text); }
 
   .source-switch .seg.active {
     background: var(--primary);
-    color: #fff;
+    color: #0D0D0D;
     border-color: var(--primary);
     opacity: 1;
   }
@@ -400,7 +439,7 @@
 
   .release-item.selected {
     border-color: var(--primary);
-    background: rgba(255,0,41,.06);
+    background: rgba(233,226,255,.06);
   }
 
   .release-item .tag { flex-shrink: 0; }
@@ -424,7 +463,7 @@
     flex-shrink: 0;
   }
 
-  .badge.arcdevs { border-color: rgba(255,0,41,.5); color: var(--primary); }
+  .badge.arcdevs { border-color: rgba(233,226,255,.5); color: var(--primary); }
 
   .row-hint { margin-top: 8px; }
 
@@ -433,12 +472,18 @@
   .modal-overlay {
     position: fixed;
     inset: 0;
-    background: rgba(0,0,0,.65);
+    background: rgba(13,13,13,.72);
     display: flex;
     align-items: center;
     justify-content: center;
     z-index: 50;
     padding: 20px;
+    animation: fadeIn .2s ease both;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
   }
 
   .modal {
@@ -450,6 +495,7 @@
     border: 1px solid var(--border-light);
     border-radius: 18px;
     padding: 22px;
+    animation: popIn .28s cubic-bezier(.22,1,.36,1) both;
   }
 
   .modal-head {
@@ -529,20 +575,21 @@
     bottom: 24px;
     left: 50%;
     transform: translate(-50%, 80px);
-    background: var(--success);
+    background: var(--primary);
     color: #0D0D0D;
     font-size: 14px;
     font-weight: 800;
     padding: 12px 20px;
     border-radius: 12px;
     opacity: 0;
-    transition: all .25s;
+    transition: all .3s cubic-bezier(.22,1,.36,1);
     pointer-events: none;
     z-index: 60;
+    box-shadow: 0 12px 40px -8px rgba(233,226,255,.35);
   }
 
   .toast.show { transform: translate(-50%, 0); opacity: 1; }
-  .toast.error { background: var(--danger); color: #fff; }
+  .toast.error { background: var(--danger); color: #fff; box-shadow: 0 12px 40px -8px rgba(255,77,94,.35); }
 
   .muted { color: var(--text-muted); font-size: 12px; }
   .hidden { display: none !important; }
@@ -557,7 +604,7 @@
     padding: 24px;
   }
 
-  .login-screen .card { max-width: 440px; width: 100%; }
+  .login-screen .card { max-width: 440px; width: 100%; animation: fadeUp .4s cubic-bezier(.22,1,.36,1) both; }
   .login-screen .card h2 { font-size: 18px; text-transform: none; letter-spacing: 0; }
   .login-screen .card .hint { margin-bottom: 18px; }
   .login-screen .login { flex-direction: column; gap: 10px; }
@@ -599,10 +646,11 @@
     text-align: left;
     font-size: 13px;
     font-weight: 800;
+    transition: background .18s, color .18s, transform .18s, box-shadow .18s;
   }
 
-  .sidebar nav button.nav:hover { background: var(--surface-light); color: var(--text); opacity: 1; }
-  .sidebar nav button.nav.active { background: var(--primary); color: #fff; }
+  .sidebar nav button.nav:hover { background: var(--surface-light); color: var(--text); opacity: 1; transform: translateY(-1px); }
+  .sidebar nav button.nav.active { background: var(--primary); color: #0D0D0D; box-shadow: 0 8px 24px -12px rgba(233,226,255,.4); }
   .sidebar nav button.nav ion-icon { font-size: 18px; flex-shrink: 0; }
 
   .sidebar .side-foot {
@@ -660,7 +708,20 @@
 
   main { max-width: 860px; width: 100%; margin: 0 auto; padding: 24px 24px 8px; }
 
-  .section:not(.hidden) { display: block; }
+  .section:not(.hidden) {
+    display: block;
+    animation: fadeUp .32s cubic-bezier(.22,1,.36,1) both;
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes popIn {
+    from { opacity: 0; transform: scale(.96) translateY(8px); }
+    to { opacity: 1; transform: scale(1) translateY(0); }
+  }
 
   .stat-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 16px; }
 
@@ -669,6 +730,14 @@
     border: 1px solid var(--border);
     border-radius: 12px;
     padding: 12px 14px;
+    transition: border-color .18s, transform .18s, background .18s;
+    animation: fadeUp .32s cubic-bezier(.22,1,.36,1) both;
+  }
+
+  .stat:hover {
+    border-color: var(--border-light);
+    transform: translateY(-2px);
+    background: var(--surface);
   }
 
   .stat .num { font-size: 20px; font-weight: 800; }
@@ -698,6 +767,7 @@
     justify-content: flex-end;
     gap: 10px;
     flex-wrap: wrap;
+    animation: fadeUp .36s cubic-bezier(.22,1,.36,1) both;
   }
 
   .savebar .muted { margin-right: auto; }
@@ -1029,7 +1099,8 @@
     releases: [],    // GitHub release objects
     selectedRelease: null,
     arcdevsOwners: ["arcdevsio", "arcdevs"],
-    source: "store" // "store" = ArcDevsio/Dockyard (pinned) | "repo" = any owner/repo (live)
+    source: "store", // "store" = ArcDevsio/Dockyard (pinned) | "repo" = any owner/repo (live)
+    saving: false
   };
 
   var CATEGORIES = [
@@ -1202,6 +1273,27 @@
     render();
   }
 
+  async function checkWriteScopes() {
+    try {
+      var res = await fetch("https://api.github.com/user", {
+        headers: { Authorization: "Bearer " + token, Accept: "application/vnd.github+json" }
+      });
+      if (!res.ok) return;
+      var scopes = (res.headers.get("X-OAuth-Scopes") || "").split(",").map(function (s) { return s.trim(); }).filter(Boolean);
+      if (scopes.length && scopes.indexOf("repo") === -1 && scopes.indexOf("public_repo") === -1) {
+        toast("Heads up: this token has no repo write scope — saves/deletes will fail. Use a token with the repo scope.", true, 8000);
+        $("sideStatus").className = "conn offline";
+      }
+    } catch (e) { /* ignore */ }
+  }
+
+  function friendlyApiError(e) {
+    var msg = e.message || String(e);
+    if (/401/.test(msg)) return msg + " — your token may be expired or invalid. Re-login with a fresh token.";
+    if (/403/.test(msg)) return msg + " — your token probably lacks write access (needs the repo scope).";
+    return msg;
+  }
+
   $("connectBtn").addEventListener("click", async function () {
     token = $("tokenInput").value.trim();
     $("loginError").textContent = "";
@@ -1213,6 +1305,7 @@
       setStatus("Online", true);
       toast("Connected — live updates on");
       loadArcDevsRepos();
+      checkWriteScopes();
     } catch (e) {
       token = null;
       $("loginError").textContent = "Couldn't connect: " + e.message;
@@ -1232,6 +1325,7 @@
       showLoggedIn();
       setStatus("Online", true);
       loadArcDevsRepos();
+      checkWriteScopes();
     } catch (e) {
       localStorage.removeItem(TOKEN_KEY);
       token = null;
@@ -1240,8 +1334,10 @@
   })();
 
   // Auto-reload: poll for remote changes and refresh without losing your session.
+  // Skips while the raw editors are open (in case of unsaved edits) or a write is in flight.
   setInterval(async function pollRemote() {
-    if (!connected) return;
+    if (!connected || state.saving) return;
+    if (!$("rawConfigCard").classList.contains("hidden") || !$("rawCatalogCard").classList.contains("hidden")) return;
     try {
       var [cMeta, caMeta] = await Promise.all([
         apiFetch(ghApiPath("config.json")),
@@ -1366,6 +1462,7 @@
       var tools = document.createElement("div");
       tools.className = "tools";
       tools.appendChild(mkTool("✕", true, function () {
+        if (state.saving) return;
         if (!window.confirm('Delete "' + m.name + '" from the catalog?\n\nIt also stops being featured.')) return;
         catalog.mods = catalog.mods.filter(function (x) { return x.id !== m.id; });
         state.featuredMods = state.featuredMods.filter(function (f) { return f !== m.id; });
@@ -1410,13 +1507,18 @@
   }
 
   async function persistCatalogAfterDelete() {
+    if (state.saving) return;
+    state.saving = true;
     try {
       await writeGitFile("catalog.json", catalog);
       await writeGitFile("config.json", collectConfig());
       toast("Deleted. Saved to GitHub — Pages updates in ~1 min.");
       render();
     } catch (e) {
-      toast("Delete failed: " + e.message, true);
+      toast("Delete failed: " + friendlyApiError(e), true);
+      render();
+    } finally {
+      state.saving = false;
     }
   }
 
@@ -1515,6 +1617,7 @@
   });
 
   $("delModBtn").addEventListener("click", function () {
+    if (state.saving) return;
     var id = $("delModPicker").value;
     if (!id) { toast("Pick a mod to delete.", true); return; }
     var mod = catalog.mods.filter(function (m) { return m.id === id; })[0];
@@ -1527,6 +1630,7 @@
   });
 
   $("delModderBtn").addEventListener("click", function () {
+    if (state.saving) return;
     var id = $("delModderPicker").value;
     if (!id) { toast("Pick a modder to delete.", true); return; }
     var meta = modderList().filter(function (m) { return m.id === id; })[0];
@@ -2096,7 +2200,12 @@
   });
 
   $("saveBtn").addEventListener("click", async function () {
+    var statusEl = $("saveStatus");
+
+    if (statusEl.textContent === "Saving…") return;
+
     var configJson = collectConfig();
+    var catalogDraft = catalog;
 
     if (!$("rawConfigCard").classList.contains("hidden")) {
       try {
@@ -2107,32 +2216,35 @@
       }
     }
 
-    var statusEl = $("saveStatus");
+    if (!$("rawCatalogCard").classList.contains("hidden")) {
+      try {
+        catalogDraft = JSON.parse($("rawCatalogTextarea").value);
+      } catch (e) {
+        toast("Raw catalog.json is invalid: " + e.message, true);
+        return;
+      }
+      if (!Array.isArray(catalogDraft.mods)) {
+        toast("catalog.json must contain a mods array.", true);
+        return;
+      }
+    }
+
     statusEl.textContent = "Saving…";
     try {
+      await writeGitFile("catalog.json", catalogDraft);
+      catalog = catalogDraft;
       await writeGitFile("config.json", configJson);
-
-      if (!$("rawCatalogCard").classList.contains("hidden")) {
-        var catalogDraft;
-        try {
-          catalogDraft = JSON.parse($("rawCatalogTextarea").value);
-        } catch (e) {
-          toast("Raw catalog.json is invalid: " + e.message, true);
-          return;
-        }
-        if (!Array.isArray(catalogDraft.mods)) {
-          toast("catalog.json must contain a mods array.", true);
-          return;
-        }
-        catalog = catalogDraft;
-        await writeGitFile("catalog.json", catalog);
-        render();
+      render();
+      if (!$("rawConfigCard").classList.contains("hidden")) {
+        $("rawConfigTextarea").value = JSON.stringify(configJson, null, 2);
       }
-
+      if (!$("rawCatalogCard").classList.contains("hidden")) {
+        $("rawCatalogTextarea").value = JSON.stringify(catalogDraft, null, 2);
+      }
       toast("Saved to GitHub — Pages updates in ~1 min.");
     } catch (e) {
       statusEl.textContent = "";
-      toast("Save failed: " + e.message, true);
+      toast("Save failed: " + friendlyApiError(e), true);
       return;
     }
     statusEl.textContent = "";
